@@ -6,6 +6,7 @@ import cors from "cors";
 import path from "path";
 import cookieParser from "cookie-parser";
 import { authRoutes } from "./routes/auth.routes";
+import { bookRoutes } from "./routes/book.routes";
 dotenv.config();
 
 const app: Express = express();
@@ -20,7 +21,9 @@ app.listen(port, () => {
 });
 mongoose
   .connect(
-    `mongodb+srv://${encodeURIComponent(userName)}:${encodeURIComponent(password)}@cluster0.ux1rlrp.mongodb.net/${dbName}?retryWrites=true&w=majority`
+    `mongodb+srv://${encodeURIComponent(userName)}:${encodeURIComponent(
+      password
+    )}@cluster0.ux1rlrp.mongodb.net/${dbName}?retryWrites=true&w=majority`
   )
   .then(() => {
     console.log("DB connected");
@@ -39,3 +42,4 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(express.json());
 app.use("/", authRoutes);
+app.use("/", bookRoutes);
