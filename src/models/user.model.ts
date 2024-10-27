@@ -9,6 +9,7 @@ interface IUser extends Document {
   password: string;
   birthDate: Date | null;
   gender: number | null;
+  isActive: boolean;
 }
 
 const userSchema = new Schema<IUser>({
@@ -19,6 +20,7 @@ const userSchema = new Schema<IUser>({
   password: { type: String, required: true },
   birthDate: { type: Date, default: null },
   gender: { type: Number, default: null },
+  isActive: { type: Boolean, default: true, required: false },
 });
 
 const Users = model<IUser>("Users", userSchema);
