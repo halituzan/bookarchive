@@ -17,7 +17,7 @@ router.get(`${CONFIG.apiVersion}/user/books/:userId`, getUserBook);
 router.delete(`${CONFIG.apiVersion}/user/books/:bookId`, deleteUserBook);
 // Tüm kitapların döndüğü endpoine
 router.get(`${CONFIG.apiVersion}/book/allBooks`, getAllBook);
-// Tüm kitapların döndüğü endpoine
+// Kategoriye gmre tüm kitapların döndüğü endpoine
 router.get(
   `${CONFIG.apiVersion}/book/byCategory/:bookType`,
   getAllBookByCategory
