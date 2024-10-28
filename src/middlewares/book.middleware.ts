@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import Books from "../models/book.model";
 import Users from "../models/user.model";
+import tokenCheck from "../helpers/tokenCheck";
 type BookProps = {
   title: string;
   description: string;
@@ -11,55 +12,52 @@ type BookProps = {
   image?: string;
 };
 
-// Kitap Ekleniyor
+// User a kitap ekleniyor
 export const createBook = async (
   req: Request,
   res: Response,
   next: () => void
 ) => {
   const { title, description, author, isFavorite, image } = req.body;
-  const token = req.headers.authorization?.split("Bearer ")[1];
-  if (!token) {
-    return res.status(403).json({ message: "Token gerekli" });
-  }
+  const token = tokenCheck(req, res) as any;
   const secretKey = process.env.JWT_SECRET_KEY || "";
 
   try {
     jwt.verify(token, secretKey, async (err: any, decoded: any) => {
       if (err) {
         return res.status(403).json({ message: "Geçersiz token" });
-      } else {
-        const userId = decoded?.userId;
-        if (!userId) {
-          return res
-            .status(403)
-            .json({ message: "Böyle bir kullanıcı mevcut değil." });
-        } else {
-          const user = await Users.findById(userId);
-          if (!user) {
-            console.error("Kullanıcı bulunamadı!");
-            return;
-          }
-
-          let payload: BookProps = {
-            title,
-            description,
-            author,
-            userId,
-          };
-
-          if (isFavorite) payload.isFavorite = true;
-          if (image) payload.image = image;
-
-          const newBook = new Books(payload);
-
-          await newBook.save();
-          return res.json({
-            status: true,
-            message: "Kitap başarılı bir şekilde eklendi",
-          });
-        }
       }
+      const userId = decoded?.userId;
+      if (!userId) {
+        return res
+          .status(403)
+          .json({ message: "Böyle bir kullanıcı mevcut değil." });
+      }
+      // Tablodan ilgili userId ile user a ulaşıyoruz.
+      const user = await Users.findById(userId);
+      if (!user) {
+        return res
+          .status(403)
+          .json({ message: "Böyle bir kullanıcı mevcut değil." });
+      }
+
+      let payload: BookProps = {
+        title,
+        description,
+        author,
+        userId,
+      };
+
+      if (isFavorite) payload.isFavorite = true;
+      if (image) payload.image = image;
+
+      const newBook = new Books(payload);
+
+      await newBook.save();
+      return res.json({
+        status: true,
+        message: "Kitap başarılı bir şekilde eklendi",
+      });
     });
   } catch (error) {
     console.error(error);
@@ -67,7 +65,7 @@ export const createBook = async (
   }
 };
 
-// User a Ait Kitaplar Listeleniyor
+// User a ait kitaplar listeleniyor
 export const getUserBook = async (
   req: Request,
   res: Response,
@@ -111,10 +109,7 @@ export const deleteUserBook = async (
   next: () => void
 ) => {
   const { bookId } = req.params;
-  const token = req.headers.authorization?.split("Bearer ")[1];
-  if (!token) {
-    return res.status(403).json({ message: "Token gerekli" });
-  }
+  const token = tokenCheck(req, res) as any;
   const secretKey = process.env.JWT_SECRET_KEY || "";
 
   try {

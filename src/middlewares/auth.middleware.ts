@@ -122,37 +122,3 @@ export const logOut = async (req: Request, res: Response) => {
   }
 };
 
-export const me = async (req: Request, res: Response, next: () => void) => {
-  const token = req.headers.authorization?.split("Bearer ")[1];
-  if (!token) {
-    return res.status(403).json({ message: "Token gerekli" });
-  }
-
-  const secretKey = process.env.JWT_SECRET_KEY || "";
-
-  try {
-    jwt.verify(token, secretKey, async (err: any, decoded: any) => {
-      if (err) {
-        return res.status(403).json({ message: "Geçersiz token" });
-      }
-
-      const userId = decoded?.userId;
-
-      if (!userId) {
-        return res
-          .status(403)
-          .json({ message: "Böyle bir kullanıcı mevcut değil." });
-      }
-
-      const user = await Users.findById(userId);
-      if (!user) {
-        return res.status(404).json({ message: "Kullanıcı bulunamadı." });
-      }
-
-      return res.json({ status: true, data: user });
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: false, message: "Sunucu hatası" });
-  }
-};
