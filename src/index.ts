@@ -14,7 +14,6 @@ const port = process.env.PORT || 4000;
 const userName = process.env.MONGODB_USERNAME ?? "";
 const password = process.env.MONGODB_PASSWORD ?? "";
 const dbName = process.env.MONGO_DB_NAME ?? "";
-const MONGO_DB_FULL_URL = process.env.MONGO_DB_FULL_URL ?? "";
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
