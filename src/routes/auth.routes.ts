@@ -8,6 +8,5 @@ router.post(`${CONFIG.apiVersion}/login`, login);
 router.post(`${CONFIG.apiVersion}/register`, register);
 router.get(`${CONFIG.apiVersion}/logout`, logOut);
 router.get(`${CONFIG.apiVersion}/me`, me);
-router.post(`${CONFIG.apiVersion}/user/uploadProfileImage`, uploadProfileImage);
 
 export { router as authRoutes };
