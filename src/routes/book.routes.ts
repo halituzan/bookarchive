@@ -12,7 +12,7 @@ import {
 // Kullanıcının kitap ekleme endpointi
 router.post(`${CONFIG.apiVersion}/user/createBook`, createBook);
 // Kullanıcıya ait kitapların listesi
-router.get(`${CONFIG.apiVersion}/user/books/:userId`, getUserBook);
+router.get(`${CONFIG.apiVersion}/user/books/:userId/:type`, getUserBook);
 // Kullanıcının kitabını soft delete eden endpoint
 router.delete(`${CONFIG.apiVersion}/user/books/:bookId`, deleteUserBook);
 // Tüm kitapların döndüğü endpoine

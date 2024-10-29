@@ -75,14 +75,14 @@ export const getUserBook = async (
   res: Response,
   next: () => void
 ) => {
-  const { userId } = req.params;
+  const { userId, type } = req.params;
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
   const sortType = req.query.sortType ?? "createdAt";
   const sortDirection = req.query.sort === "asc" ? 1 : -1;
 
   try {
-    const data = await Books.find({ userId, isDelete: false })
+    const data = await Books.find({ userId, isDelete: false, type })
       .sort({ [sortType as string]: sortDirection }) // sortType alanına göre sıralama
       .skip((page - 1) * limit) // Sayfalama için atlama
       .limit(limit)
