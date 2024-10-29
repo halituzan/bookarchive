@@ -10,6 +10,7 @@ type BookProps = {
   description: string;
   userId: string;
   author: string;
+  type: string;
   isFavorite?: boolean;
   image?: string;
 };
@@ -20,7 +21,7 @@ export const createBook = async (
   res: Response,
   next: () => void
 ) => {
-  const { title, description, author, isFavorite, image } = req.body;
+  const { title, description, author, isFavorite, image, type } = req.body;
   const token = tokenCheck(req, res) as any;
   const secretKey = process.env.JWT_SECRET_KEY || "";
 
@@ -47,6 +48,7 @@ export const createBook = async (
         title,
         description,
         author,
+        type,
         userId,
       };
 

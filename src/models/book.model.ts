@@ -11,13 +11,18 @@ interface IBook extends Document {
   createdAt: Date;
   updatedAt: Date;
   isDelete: boolean;
+  type: string;
 }
+
+// type:
+// 0-okundu, 1-okunmakta olan, 2-okumak istenilen
 
 const bookSchema = new Schema<IBook>(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
     author: { type: String, required: true },
+    type: { type: String, required: true },
     userId: { type: Schema.Types.ObjectId, ref: "Users", required: true },
     isFavorite: { type: Boolean, default: false },
     isDelete: { type: Boolean, default: false },
