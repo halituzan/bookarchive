@@ -5,6 +5,17 @@ import Users from "../models/user.model";
 import tokenCheck from "../helpers/tokenCheck";
 import AllBooks from "../models/allBook.model";
 import categoryTypes from "../helpers/categoryTypes";
+type CreateBookProps = {
+  name: string;
+  author: string;
+  publisher: string;
+  publication_year: number;
+  ISBN?: number;
+  book_type: string;
+  explanation?: string;
+  book_img?: string;
+  userId: string;
+};
 type BookProps = {
   title: string;
   description: string;
@@ -15,13 +26,22 @@ type BookProps = {
   image?: string;
 };
 
-// User a kitap ekleniyor
+// Tüm kitapların listesine kitap ekleniyor
 export const createBook = async (
   req: Request,
   res: Response,
   next: () => void
 ) => {
-  const { title, description, author, isFavorite, image, type } = req.body;
+  const {
+    name,
+    author,
+    publisher,
+    publication_year,
+    ISBN,
+    book_type,
+    explanation,
+    book_img,
+  } = req.body;
   const token = tokenCheck(req, res) as any;
   const secretKey = process.env.JWT_SECRET_KEY || "";
 
@@ -44,16 +64,72 @@ export const createBook = async (
           .json({ message: "Böyle bir kullanıcı mevcut değil." });
       }
 
-      let payload: BookProps = {
-        title,
-        description,
+      let payload: CreateBookProps = {
+        name,
         author,
+        publisher,
+        publication_year,
+        book_type,
+        explanation,
+        userId,
+      };
+
+      if (book_img) payload.book_img = book_img;
+      if (ISBN) payload.ISBN = ISBN;
+
+      const newBook = new AllBooks(payload);
+
+      await newBook.save();
+      return res.json({
+        status: true,
+        message: "Kitap başarılı bir şekilde eklendi",
+        data: newBook,
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ status: false, message: "Sunucu hatası" });
+  }
+};
+// User a kitap ekleniyor
+export const createBookFromList = async (
+  req: Request,
+  res: Response,
+  next: () => void
+) => {
+  const { bookId, isFavorite, type } = req.body;
+  const token = tokenCheck(req, res) as any;
+  const secretKey = process.env.JWT_SECRET_KEY || "";
+
+  try {
+    jwt.verify(token, secretKey, async (err: any, decoded: any) => {
+      if (err) {
+        return res.status(403).json({ message: "Geçersiz token" });
+      }
+      const userId = decoded?.userId;
+      if (!userId) {
+        return res
+          .status(403)
+          .json({ message: "Böyle bir kullanıcı mevcut değil." });
+      }
+      // Tablodan ilgili userId ile user a ulaşıyoruz.
+      const user = await Users.findById(userId);
+      if (!user) {
+        return res
+          .status(403)
+          .json({ message: "Böyle bir kullanıcı mevcut değil." });
+      }
+      const book = await AllBooks.findById(bookId);
+
+      let payload: BookProps = {
+        title: book?.name as string,
+        description: book?.explanation as string,
+        author: book?.author as string,
         type,
         userId,
       };
 
       if (isFavorite) payload.isFavorite = true;
-      if (image) payload.image = image;
 
       const newBook = new Books(payload);
 
@@ -68,7 +144,6 @@ export const createBook = async (
     return res.status(500).json({ status: false, message: "Sunucu hatası" });
   }
 };
-
 // User a ait kitaplar listeleniyor
 export const getUserBook = async (
   req: Request,
@@ -105,7 +180,6 @@ export const getUserBook = async (
     return res.status(500).json({ status: false, message: "Sunucu hatası" });
   }
 };
-
 // User a ait kitabı soft delete eder
 export const deleteUserBook = async (
   req: Request,
@@ -159,7 +233,6 @@ export const deleteUserBook = async (
     return res.status(500).json({ status: false, message: "Sunucu hatası" });
   }
 };
-
 // Tüm kitaplar listelenir
 export const getAllBook = async (
   req: Request,

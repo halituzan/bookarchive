@@ -3,14 +3,17 @@ const router = require("express").Router();
 import { CONFIG } from "../config";
 import {
   createBook,
+  createBookFromList,
   deleteUserBook,
   getAllBook,
   getAllBookByCategory,
   getUserBook,
 } from "../middlewares/book.middleware";
 
-// Kullanıcının kitap ekleme endpointi
-router.post(`${CONFIG.apiVersion}/user/createBook`, createBook);
+// Kullanıcının kitap listesine kitap ekleme endpointi
+router.post(`${CONFIG.apiVersion}/createBook`, createBook);
+// Kullanıcının kendisi için kitap ekleme endpointi (Kitap Listesinden)
+router.post(`${CONFIG.apiVersion}/user/createBookFromList`, createBookFromList);
 // Kullanıcıya ait kitapların listesi
 router.get(`${CONFIG.apiVersion}/user/books/:userId/:type`, getUserBook);
 // Kullanıcının kitabını soft delete eden endpoint

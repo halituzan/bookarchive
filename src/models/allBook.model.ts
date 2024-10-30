@@ -2,26 +2,26 @@
 import { Document, Schema, model } from "mongoose";
 
 interface IAllBook extends Document {
-  name: string;
+  name: string | number;
   author: string;
   publisher: string;
   publication_year: number;
-  ISBN: number;
   book_type: string;
-  explanation: string;
-  book_img: string;
+  explanation?: string;
+  ISBN?: number | null;
+  book_img?: string | null;
 }
 
 const allBookSchema = new Schema<IAllBook>(
   {
-    name: String,
+    name: { type: String },
     author: String,
     publisher: String,
     publication_year: Number,
-    ISBN: Number,
     book_type: String,
-    explanation: String,
-    book_img: String,
+    explanation: { type: String, default: "" },
+    ISBN: { type: Number, default: null },
+    book_img: { type: String, default: "" },
   },
   { timestamps: true }
 );

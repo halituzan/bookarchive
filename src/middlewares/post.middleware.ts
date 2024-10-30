@@ -93,6 +93,7 @@ export const getUserPosts = async (
     .skip((page - 1) * limit) // Sayfalama için atlama
     .limit(limit)
     .exec();
+
   // Toplam kitap sayısı
   const total = await BookPosts.countDocuments({ userId, isDelete: false });
   return res.json({
@@ -116,10 +117,15 @@ export const getPosts = async (
   const sortDirection = req.query.sort === "asc" ? 1 : -1;
 
   const posts = await BookPosts.find({ isDelete: false })
+    .populate("userId", "userName firstName lastName image") // Users koleksiyonundaki user bilgilerini çekmek için
+    .populate("bookId", "title author description type image") // Books koleksiyonundaki book bilgilerini çekmek için
     .sort({ createdAt: sortDirection }) // oluşturma tarihine göre sıralama
     .skip((page - 1) * limit) // Sayfalama için atlama
     .limit(limit)
     .exec();
+
+  console.log("posts", posts);
+
   // Toplam kitap sayısı
   const total = await BookPosts.countDocuments({ isDelete: false });
   return res.json({

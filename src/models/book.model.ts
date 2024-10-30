@@ -2,12 +2,10 @@
 import { Date, Document, Schema, model } from "mongoose";
 
 interface IBook extends Document {
-  title: string;
-  description: string;
-  author: string;
   userId: Schema.Types.ObjectId;
+  bookId: Schema.Types.ObjectId;
+  book: Schema.Types.ObjectId;
   isFavorite: boolean;
-  image: string;
   createdAt: Date;
   updatedAt: Date;
   isDelete: boolean;
@@ -19,14 +17,12 @@ interface IBook extends Document {
 
 const bookSchema = new Schema<IBook>(
   {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    author: { type: String, required: true },
     type: { type: String, required: true },
     userId: { type: Schema.Types.ObjectId, ref: "Users", required: true },
+    bookId: { type: Schema.Types.ObjectId, ref: "AllBooks", required: true },
+    book: { type: Schema.Types.ObjectId, ref: "AllBooks", required: true },
     isFavorite: { type: Boolean, default: false },
     isDelete: { type: Boolean, default: false },
-    image: { type: String, default: "" },
   },
   { timestamps: true }
 );

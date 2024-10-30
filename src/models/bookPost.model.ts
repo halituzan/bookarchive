@@ -2,8 +2,8 @@ import { Date, Document, Schema, model } from "mongoose";
 
 interface IBookPost extends Document {
   content: string;
-  userId: Schema.Types.ObjectId;
-  bookId: Schema.Types.ObjectId;
+  user: Schema.Types.ObjectId;
+  book: Schema.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
   isDelete: boolean;
@@ -12,8 +12,8 @@ interface IBookPost extends Document {
 const bookPostSchema = new Schema<IBookPost>(
   {
     content: { type: String, required: true },
-    userId: { type: Schema.Types.ObjectId, ref: "Users", required: true },
-    bookId: { type: Schema.Types.ObjectId, ref: "Books", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "Users", required: true },
+    book: { type: Schema.Types.ObjectId, ref: "Books", required: true },
     isDelete: { type: Boolean, default: false },
   },
   { timestamps: true }
