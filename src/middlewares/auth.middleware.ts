@@ -63,7 +63,10 @@ export const login = async (req: Request, res: Response) => {
     if (!user) {
       return res
         .status(400)
-        .json({ status: false, message: "Kullanıcı bulunamadı" });
+        .json({
+          status: false,
+          message: "Giriş bilgileriniz yanlış veya şifreniz yanlış",
+        });
     }
     if (!user.isActive) {
       return res.status(400).json({
@@ -78,7 +81,12 @@ export const login = async (req: Request, res: Response) => {
     if (user) {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res.status(400).json({ status: false, message: "Şifre yanlış" });
+        return res
+          .status(400)
+          .json({
+            status: false,
+            message: "Giriş bilgileriniz yanlış veya şifreniz yanlış",
+          });
       }
 
       const token = jwt.sign({ userId: user._id }, secretKey, {
@@ -121,4 +129,3 @@ export const logOut = async (req: Request, res: Response) => {
     });
   }
 };
-
