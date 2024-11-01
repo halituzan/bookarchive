@@ -1,0 +1,47 @@
+[
+  {
+    "type": "0",
+    "name": "Bilim Kurgu",
+    "url": "bilim-kurgu"
+  },
+  {
+    "type": "1",
+    "name": "Dünya Roman",
+    "url": "dunya-roman"
+  },
+  {
+    "type": "2",
+    "name": "Fantastik",
+    "url": "fantastik"
+  },
+  {
+    "type": "3",
+    "name": "Korku Gerilim",
+    "url": "korku-gerilim"
+  },
+  {
+    "type": "4",
+    "name": "Macera",
+    "url": "macera"
+  },
+  {
+    "type": "5",
+    "name": "Polisiye",
+    "url": "polisiye"
+  },
+  {
+    "type": "6",
+    "name": "Romantik",
+    "url": "romantik"
+  },
+  {
+    "type": "7",
+    "name": "Türk Klasikleri",
+    "url": "turk-klasikleri"
+  },
+  {
+    "type": "8",
+    "name": "Türk Romanı",
+    "url": "turk-romani"
+  }
+]

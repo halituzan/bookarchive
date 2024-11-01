@@ -124,7 +124,7 @@ export const createBookFromList = async (
       let payload: BookProps = {
         title: book?.name as string,
         description: book?.explanation as string,
-        author: book?.author as string,
+        author: book?.author as any,
         type,
         userId,
       };
@@ -256,7 +256,7 @@ export const getAllBook = async (
     matchStage.$expr = {
       $regexMatch: {
         input: { $toLower: `$${searchType}` },
-        regex: `.*${searchValue}.*`,
+        regex: `.*${searchValue.toLowerCase()}.*`,
       },
     };
   }
@@ -267,7 +267,38 @@ export const getAllBook = async (
       { $sort: { [sortType as string]: sortDirection } },
       { $skip: (page - 1) * limit },
       { $limit: limit },
+      {
+        $lookup: {
+          from: "publishertypes", // İlişkilendirilmiş koleksiyonun adı
+          localField: "publisher", // AllBooks koleksiyonundaki referans alanı
+          foreignField: "_id", // publishertypes koleksiyonundaki eşleşen alan
+          as: "publisherData", // Sonuçta elde edilecek alan adı
+        },
+      },
+      {
+        $lookup: {
+          from: "booktypes",
+          localField: "book_type",
+          foreignField: "_id",
+          as: "bookTypeData",
+        },
+      },
+      {
+        $lookup: {
+          from: "authortypes",
+          localField: "author",
+          foreignField: "_id",
+          as: "authorData",
+        },
+      },
     ]);
+
+    const formattedData = data.map((dt) => ({
+      ...dt,
+      publisherData: dt.publisherData[0],
+      bookTypeData: dt.bookTypeData[0],
+      authorData: dt.authorData[0],
+    }));
 
     // Toplam kitap sayısı
     const total = await AllBooks.countDocuments(matchStage);
@@ -279,7 +310,7 @@ export const getAllBook = async (
       total,
       limit,
       sort: req.query.sort || "desc",
-      data,
+      data: formattedData,
     });
   } catch (error) {
     console.error(error);
