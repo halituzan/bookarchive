@@ -3,13 +3,8 @@ import jwt from "jsonwebtoken";
 import Books from "../models/book.model";
 import Users from "../models/user.model";
 import tokenCheck from "../helpers/tokenCheck";
-type UserProps = {
-  firstName?: string;
-  lastName?: string;
-  userName?: string;
-  birthDate?: Date | null;
-  gender?: number | null;
-};
+import { UserProps } from "../types/global.types";
+
 export const updateProfile = async (
   req: Request,
   res: Response,
