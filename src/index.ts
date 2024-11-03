@@ -5,11 +5,14 @@ import mongoose from "mongoose";
 import cors from "cors";
 import path from "path";
 import cookieParser from "cookie-parser";
-import { authRoutes } from "./routes/auth.routes";
-import { bookRoutes } from "./routes/book.routes";
-import { userRoutes } from "./routes/user.routes";
-import { bookPostRoutes } from "./routes/post.routes";
-import { enumRoutes } from "./routes/enum.routes";
+import {
+  authRoutes,
+  bookPostRoutes,
+  bookRoutes,
+  enumRoutes,
+  followRoutes,
+  userRoutes,
+} from "./routes";
 dotenv.config();
 
 const app: Express = express();
@@ -48,3 +51,4 @@ app.use("/", bookRoutes);
 app.use("/", userRoutes);
 app.use("/", bookPostRoutes);
 app.use("/", enumRoutes);
+app.use("/", followRoutes);
