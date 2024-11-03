@@ -45,12 +45,14 @@ export const updateProfile = async (
         payload.gender = gender;
 
       const userNameExist = await Users.find({ userName });
-      if (userNameExist && userName) {
+
+      if (userNameExist.length > 0 && userName) {
         return res.status(400).json({
           status: false,
           message: "Kullanmak istediğiniz kullanıcı adı uygun değildir.",
         });
       }
+
       // Kitabı isDelete alanını true yaparak soft delete işlemi
       const updatedUser = await Users.findOneAndUpdate(
         { _id: userId },
