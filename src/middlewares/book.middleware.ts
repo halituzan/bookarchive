@@ -17,13 +17,15 @@ type CreateBookProps = {
   userId: string;
 };
 type BookProps = {
-  title: string;
-  description: string;
-  userId: string;
-  author: string;
-  type: string;
+  title?: string;
+  description?: string;
+  userId?: string;
+  author?: string;
+  type?: string;
   isFavorite?: boolean;
   image?: string;
+  bookId?: string;
+  book?: string;
 };
 
 // Tüm kitapların listesine kitap ekleniyor
@@ -122,11 +124,11 @@ export const createBookFromList = async (
       const book = await AllBooks.findById(bookId);
 
       let payload: BookProps = {
-        title: book?.name as string,
-        description: book?.explanation as string,
-        author: book?.author as any,
         type,
+        title: book?.name as string,
         userId,
+        bookId,
+        book: bookId,
       };
 
       if (isFavorite) payload.isFavorite = true;
@@ -158,6 +160,7 @@ export const getUserBook = async (
 
   try {
     const data = await Books.find({ userId, isDelete: false, type })
+      .populate("bookId")
       .sort({ [sortType as string]: sortDirection }) // sortType alanına göre sıralama
       .skip((page - 1) * limit) // Sayfalama için atlama
       .limit(limit)

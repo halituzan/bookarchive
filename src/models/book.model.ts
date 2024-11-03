@@ -19,8 +19,8 @@ const bookSchema = new Schema<IBook>(
   {
     type: { type: String, required: true },
     userId: { type: Schema.Types.ObjectId, ref: "Users", required: true },
-    bookId: { type: Schema.Types.ObjectId, ref: "AllBooks", required: true },
-    book: { type: Schema.Types.ObjectId, ref: "AllBooks", required: true },
+    bookId: { type: Schema.Types.ObjectId, ref: "BookLists", required: true },
+    book: { type: Schema.Types.ObjectId, ref: "BookLists", required: true },
     isFavorite: { type: Boolean, default: false },
     isDelete: { type: Boolean, default: false },
   },
