@@ -8,7 +8,7 @@ interface IBook extends Document {
   isFavorite: boolean;
   createdAt: Date;
   updatedAt: Date;
-  isDelete: boolean;
+  isDeleted: boolean;
   type: string;
 }
 
@@ -22,7 +22,7 @@ const bookSchema = new Schema<IBook>(
     bookId: { type: Schema.Types.ObjectId, ref: "BookLists", required: true },
     book: { type: Schema.Types.ObjectId, ref: "BookLists", required: true },
     isFavorite: { type: Boolean, default: false },
-    isDelete: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

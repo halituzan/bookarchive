@@ -6,7 +6,7 @@ interface IBookPost extends Document {
   book: Schema.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
-  isDelete: boolean;
+  isDeleted: boolean;
 }
 
 const bookPostSchema = new Schema<IBookPost>(
@@ -14,7 +14,7 @@ const bookPostSchema = new Schema<IBookPost>(
     content: { type: String, required: true },
     user: { type: Schema.Types.ObjectId, ref: "Users", required: true },
     book: { type: Schema.Types.ObjectId, ref: "Books", required: true },
-    isDelete: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

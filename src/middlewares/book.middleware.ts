@@ -159,7 +159,7 @@ export const getUserBook = async (
   const sortDirection = req.query.sort === "asc" ? 1 : -1;
 
   try {
-    const data = await Books.find({ userId, isDelete: false, type })
+    const data = await Books.find({ userId, isDeleted: false, type })
       .populate("bookId")
       .sort({ [sortType as string]: sortDirection }) // sortType alanına göre sıralama
       .skip((page - 1) * limit) // Sayfalama için atlama
@@ -167,7 +167,7 @@ export const getUserBook = async (
       .exec();
 
     // Toplam kitap sayısı
-    const total = await Books.countDocuments({ userId, isDelete: false });
+    const total = await Books.countDocuments({ userId, isDeleted: false });
 
     return res.json({
       status: true,
@@ -211,10 +211,10 @@ export const deleteUserBook = async (
       if (!user) {
         return res.status(404).json({ message: "Kullanıcı bulunamadı." });
       }
-      // Kitabı isDelete alanını true yaparak soft delete işlemi
+      // Kitabı isDeleted alanını true yaparak soft delete işlemi
       const updatedBook = await Books.findOneAndUpdate(
         { _id: bookId, userId },
-        { isDelete: true },
+        { isDeleted: true },
         { new: true }
       );
       console.log("updatedBook", updatedBook);
