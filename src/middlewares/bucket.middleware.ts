@@ -54,7 +54,7 @@ export const uploadProfileImage = async (req: Request, res: Response) => {
         }
 
         const filePath = file.filepath;
-        const fileName = `${user.userName}.${file.mimetype.split("/")[1]}`;
+        const fileName = `${user._id}.${file.mimetype.split("/")[1]}`;
 
         try {
           // Dosyayı Firebase Storage'a yükle
