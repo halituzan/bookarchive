@@ -163,6 +163,7 @@ export const getUserProfile = async (
         readBooksCount,
         readingBooksCount,
         wishlistBooksCount,
+        totalBookCount: followersCount + readBooksCount + wishlistBooksCount,
       };
       if (!userId) {
         payload.isLoggedIn = false; // token olmadığı için logil değildir.
