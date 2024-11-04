@@ -8,8 +8,8 @@ interface IFollow extends Document {
 }
 
 const followSchema = new Schema<IFollow>({
-  follower: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  following: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  follower: { type: Schema.Types.ObjectId, ref: "Users", required: true },
+  following: { type: Schema.Types.ObjectId, ref: "Users", required: true },
   isDeleted: { type: Boolean, default: false },
   deletedAt: { type: Date },
 });

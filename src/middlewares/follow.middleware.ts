@@ -40,12 +40,10 @@ export const followUser = async (req: Request, res: Response) => {
         // Eğer önceden bir takip ilişkisi varsa
         // Mevcut ilişki kaldırılmışmı kontorlünü yapıyoruz.
         if (!follow.isDeleted) {
-          return res
-            .status(400)
-            .json({
-              status: false,
-              message: "Bu kullanıcıyı takip ediyorsunuz.",
-            });
+          return res.status(400).json({
+            status: false,
+            message: "Bu kullanıcıyı takip ediyorsunuz.",
+          });
         }
         // Mevcutta ilişki varsa
         // Kullanıcı takipten çıkarmışsa
@@ -125,4 +123,43 @@ export const unfollowUser = async (req: Request, res: Response) => {
       res.status(500).json({ message: "Bir hata oluştu!", error });
     }
   });
+};
+export const getFollowers = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  // Takip etmeye çalıştığı kişi kendisi ise error mesajı gönderiyoruz
+
+  try {
+    const data = await Follows.findOne({
+      follower: userId,
+      isDeleted: false,
+    });
+
+    res.status(200).json({ status: true, data });
+  } catch (error) {
+    res.status(500).json({ message: "Bir hata oluştu!", error });
+  }
+};
+export const getFollowing = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  // Takip etmeye çalıştığı kişi kendisi ise error mesajı gönderiyoruz
+
+  try {
+    // Kullanıcının takip ettiği kişiler (following)
+    const following = await Follows.find({
+      follower: userId,
+      isDeleted: false,
+    }).populate("following", "-password -__v");
+
+    // Kullanıcıyı takip eden kişiler (followers)
+    const followers = await Follows.find({
+      following: userId,
+      isDeleted: false,
+    }).populate("follower", "-password -__v");
+
+    res.status(200).json({ status: true, following, followers });
+  } catch (error) {
+    res.status(500).json({ message: "Bir hata oluştu!", error });
+  }
 };
