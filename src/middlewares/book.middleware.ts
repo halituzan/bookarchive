@@ -5,6 +5,7 @@ import Users from "../models/user.model";
 import tokenCheck from "../helpers/tokenCheck";
 import AllBooks from "../models/allBook.model";
 import categoryTypes from "../helpers/categoryTypes";
+import { tokenErrorMessage } from "../helpers/tokenErrorMessage";
 type CreateBookProps = {
   name: string;
   author: string;
@@ -100,28 +101,57 @@ export const createBookFromList = async (
   res: Response,
   next: () => void
 ) => {
-  const { bookId, isFavorite, type } = req.body;
+  const { bookId, isFavorite, type, readCount } = req.body;
   const token = tokenCheck(req, res) as any;
   const secretKey = process.env.JWT_SECRET_KEY || "";
 
   try {
     jwt.verify(token, secretKey, async (err: any, decoded: any) => {
-      if (err) {
-        return res.status(403).json({ message: "Geçersiz token" });
-      }
+      const errorResponse = await tokenErrorMessage(err, res, decoded?.userId);
+      // Token da bir sıkıntı varsa üstteki fonksiyon error response döndüren bir helper
+      // koda kalabalığını önlemek için yapıldı.
+      if (errorResponse) return;
       const userId = decoded?.userId;
-      if (!userId) {
-        return res
-          .status(403)
-          .json({ message: "Böyle bir kullanıcı mevcut değil." });
-      }
-      // Tablodan ilgili userId ile user a ulaşıyoruz.
+
       const user = await Users.findById(userId);
       if (!user) {
-        return res
-          .status(403)
-          .json({ message: "Böyle bir kullanıcı mevcut değil." });
+        return res.status(403).json({
+          status: false,
+          message: "Böyle bir kullanıcı mevcut değil.",
+        });
       }
+
+      const userBookList = await Books.find({ userId });
+
+      const isBookExist = userBookList.some(
+        (book) => book.bookId.toString() === bookId && !book.isDeleted
+      );
+
+      if (isBookExist) {
+        return res.status(400).json({
+          status: false,
+          message: "Eklemek istediğiniz kitap kütüphanenizde mevcuttur.",
+        });
+      }
+
+      const isBookExistButDeleted = userBookList.some(
+        (book) => book.bookId.toString() === bookId && book.isDeleted
+      );
+
+      if (isBookExistButDeleted) {
+        const currentBook = await Books.findOneAndUpdate(
+          { bookId },
+          { $set: { isDeleted: false } },
+          { new: true } // Güncellenmiş veriyi almak için
+        );
+
+        return res.json({
+          status: true,
+          message: "Kitap başarıyla geri eklendi.",
+          book: currentBook,
+        });
+      }
+
       const book = await AllBooks.findById(bookId);
 
       let payload: BookProps = {
@@ -134,10 +164,46 @@ export const createBookFromList = async (
       if (!book) {
         return;
       }
-      if (type === "0")
+      if (readCount > book?.pages_count) {
+        return res.status(400).json({
+          status: false,
+          message:
+            "Girilen sayfa sayısı kitabın sayfa sayısından büyük olamaz.",
+        });
+      }
+
+      if (!book.pages_count) {
         payload.process = {
-          pageCount: book.pages_count as number,
+          pageCount: null,
+          readCount: null,
+          percent: null,
         };
+      } else {
+        if (type === "0")
+          payload.process = {
+            pageCount: book.pages_count,
+            readCount: book.pages_count,
+            percent: ((book.pages_count / book.pages_count) * 100).toFixed(2),
+            // aslında readCount / pageCount * 100,
+          };
+        if (type === "1")
+          payload.process = {
+            pageCount: book.pages_count,
+            readCount: readCount ?? 0,
+            percent: readCount
+              ? ((readCount / book.pages_count) * 100).toFixed(2)
+              : "0",
+            // aslında readCount / pageCount * 100,
+          };
+        if (type === "2")
+          payload.process = {
+            pageCount: book.pages_count,
+            readCount: 0,
+            percent: "0",
+            // aslında readCount / pageCount * 100,
+          };
+      }
+
       const newBook = new Books(payload);
 
       await newBook.save();

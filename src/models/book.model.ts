@@ -1,6 +1,5 @@
 // book.model.ts
 import { Date, Document, Schema, model } from "mongoose";
-
 interface IBook extends Document {
   type: string;
   userId: Schema.Types.ObjectId;
