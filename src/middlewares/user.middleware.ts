@@ -115,8 +115,10 @@ export const getUserProfile = async (
 ) => {
   const { userName } = req.params;
   try {
-    const user: any = await Users.find({ userName }).select("-password -__v");
-    if (user.length === 0) {
+    const user: any = await Users.findOne({ userName }).select(
+      "-password -__v"
+    );
+    if (!user) {
       return res.status(404).json({ message: "Kullanıcı bulunamadı." });
     }
 
@@ -168,9 +170,6 @@ export const getUserProfile = async (
         payload.isEditable = false; // login olmadığı için editleme doğal olarak false olur.
       } else {
         payload.isLoggedIn = true; // token olduğu için logindir.
-        console.log("userId", userId);
-        console.log("profile", profile);
-
         if (profile._id.toString() === userId) {
           payload.isSelf = true;
           // profilin id si userId ile eşittir ve kendisidir.
