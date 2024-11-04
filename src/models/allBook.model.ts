@@ -7,6 +7,7 @@ interface IAllBook extends Document {
   publisher: Schema.Types.ObjectId;
   publication_year: number;
   book_type: Schema.Types.ObjectId;
+  pages_count: number;
   explanation?: string;
   ISBN?: number | null;
   book_img?: string | null;
@@ -27,7 +28,9 @@ const allBookSchema = new Schema<IAllBook>(
       ref: "BookTypes",
       required: true,
     },
+    pages_count: { type: Number, required: true },
     explanation: { type: String, default: "" },
+
     ISBN: { type: Number, default: null },
     book_img: { type: String, default: "" },
   },

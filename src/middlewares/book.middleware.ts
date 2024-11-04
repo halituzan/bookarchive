@@ -26,6 +26,7 @@ type BookProps = {
   image?: string;
   bookId?: string;
   book?: string;
+  process?: any;
 };
 
 // Tüm kitapların listesine kitap ekleniyor
@@ -125,14 +126,18 @@ export const createBookFromList = async (
 
       let payload: BookProps = {
         type,
-        title: book?.name as string,
         userId,
         bookId,
-        book: bookId,
       };
 
       if (isFavorite) payload.isFavorite = true;
-
+      if (!book) {
+        return;
+      }
+      if (type === "0")
+        payload.process = {
+          pageCount: book.pages_count as number,
+        };
       const newBook = new Books(payload);
 
       await newBook.save();
