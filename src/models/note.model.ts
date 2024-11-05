@@ -5,7 +5,7 @@ interface INotes extends refTypes {
   user: Schema.Types.ObjectId;
   userBook: Schema.Types.ObjectId;
   note: string;
-  notePage: number | null;
+  notePage: number;
 }
 const noteSchema = new Schema<INotes>(
   {
@@ -13,7 +13,7 @@ const noteSchema = new Schema<INotes>(
     userBook: { type: Schema.Types.ObjectId, ref: "Books", required: true },
     note: { type: String, required: true, maxlength: 256 },
     isDeleted: { type: Boolean, default: false },
-    notePage: { type: Number, default: null },
+    notePage: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
