@@ -51,16 +51,9 @@ export const createBook = async (
 
   try {
     jwt.verify(token, secretKey, async (err: any, decoded: any) => {
-      if (err) {
-        return res.status(403).json({ message: "Geçersiz token" });
-      }
+      const errorResponse = await tokenErrorMessage(err, res, decoded?.userId);
+      if (errorResponse) return;
       const userId = decoded?.userId;
-      if (!userId) {
-        return res
-          .status(403)
-          .json({ message: "Böyle bir kullanıcı mevcut değil." });
-      }
-      // Tablodan ilgili userId ile user a ulaşıyoruz.
       const user = await Users.findById(userId);
       if (!user) {
         return res
@@ -183,8 +176,7 @@ export const createBookFromList = async (
           payload.process = {
             pageCount: book.pages_count,
             readCount: book.pages_count,
-            percent: ((book.pages_count / book.pages_count) * 100).toFixed(2),
-            // aslında readCount / pageCount * 100,
+            percent: "100", // 0 - 100 arası yüzdelik
           };
         if (type === "1")
           payload.process = {
@@ -192,15 +184,13 @@ export const createBookFromList = async (
             readCount: readCount ?? 0,
             percent: readCount
               ? ((readCount / book.pages_count) * 100).toFixed(2)
-              : "0",
-            // aslında readCount / pageCount * 100,
+              : "0", // 0 - 100 arası yüzdelik
           };
         if (type === "2")
           payload.process = {
             pageCount: book.pages_count,
             readCount: 0,
-            percent: "0",
-            // aslında readCount / pageCount * 100,
+            percent: "0", // 0 - 100 arası yüzdelik
           };
       }
 

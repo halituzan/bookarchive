@@ -1,12 +1,10 @@
-import { Date, Document, Schema, model } from "mongoose";
+import { Schema, model } from "mongoose";
+import { refTypes } from "../types/global.types";
 
-interface IBookPost extends Document {
+interface IBookPost extends refTypes {
   content: string;
   user: Schema.Types.ObjectId;
   book: Schema.Types.ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
-  isDeleted: boolean;
 }
 
 const bookPostSchema = new Schema<IBookPost>(

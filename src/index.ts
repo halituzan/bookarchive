@@ -11,6 +11,7 @@ import {
   bookRoutes,
   enumRoutes,
   followRoutes,
+  noteRoutes,
   userRoutes,
 } from "./routes";
 dotenv.config();
@@ -52,3 +53,4 @@ app.use("/", userRoutes);
 app.use("/", bookPostRoutes);
 app.use("/", enumRoutes);
 app.use("/", followRoutes);
+app.use("/", noteRoutes);

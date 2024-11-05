@@ -11,3 +11,9 @@ export interface userProfile extends UserProps {
   followersCount: number;
   followingCount: number;
 }
+
+export interface refTypes extends Document {
+  isDeleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
