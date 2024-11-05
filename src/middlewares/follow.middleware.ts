@@ -2,9 +2,16 @@ import { Request, Response } from "express";
 import Follows from "../models/follow.model";
 import jwt from "jsonwebtoken";
 import tokenCheck from "../helpers/tokenCheck";
+import Users from "../models/user.model";
+
+interface User {
+  _id: string;
+  userName: string;
+  // Add other fields as needed
+}
 //! Takibe alma fonksiyonu
 export const followUser = async (req: Request, res: Response) => {
-  const { targetUserId } = req.body;
+  const { targetUserName } = req.body;
   const token = tokenCheck(req, res) as any;
   const secretKey = process.env.JWT_SECRET_KEY || "";
 
@@ -24,8 +31,16 @@ export const followUser = async (req: Request, res: Response) => {
           message: "Böyle bir kullanıcı mevcut değil.",
         });
       }
+      const user = (await Users.findOne({ userName: targetUserName }).select(
+        "_id"
+      )) as User;
+      if (!user) {
+        return res
+          .status(400)
+          .json({ status: false, message: "Kullanıcı bulunamadı." });
+      }
       // Takip etmeye çalıştığı kişi kendisi ise error mesajı gönderiyoruz
-      if (targetUserId === userId) {
+      if (user?._id.toString() === userId) {
         return res
           .status(403)
           .json({ status: false, message: "Kendinizi takip edemezsiniz." });
@@ -33,7 +48,7 @@ export const followUser = async (req: Request, res: Response) => {
 
       let follow = await Follows.findOne({
         follower: userId,
-        following: targetUserId,
+        following: user._id,
       });
 
       if (follow) {
@@ -54,7 +69,7 @@ export const followUser = async (req: Request, res: Response) => {
         await follow.save();
       } else {
         // Eğer önceden bir takip ilişkisi yoksa yeni takip ilişkisi oluşturuyoruz.
-        follow = new Follows({ follower: userId, following: targetUserId });
+        follow = new Follows({ follower: userId, following: user._id });
         await follow.save();
       }
 
@@ -77,7 +92,7 @@ export const followUser = async (req: Request, res: Response) => {
 
 //! Takipten çıkarma fonksiyonu (soft delete)
 export const unfollowUser = async (req: Request, res: Response) => {
-  const { targetUserId } = req.body;
+  const { targetUserName } = req.body;
   const token = tokenCheck(req, res) as any;
   const secretKey = process.env.JWT_SECRET_KEY || "";
   // TODO: targetUserId takipten çıkarılmak istenen kullanıcı
@@ -93,8 +108,17 @@ export const unfollowUser = async (req: Request, res: Response) => {
         message: "Böyle bir kullanıcı mevcut değil.",
       });
 
+    const user = (await Users.findOne({ userName: targetUserName }).select(
+      "_id"
+    )) as User;
+    if (!user) {
+      return res
+        .status(400)
+        .json({ status: false, message: "Kullanıcı bulunamadı." });
+    }
+
     // Takip etmeye çalıştığı kişi kendisi ise error mesajı gönderiyoruz
-    if (targetUserId === userId)
+    if (user._id === userId)
       return res.status(403).json({
         status: false,
         message: "Kendinizi takipten çıkartamazsınız.",
@@ -103,7 +127,7 @@ export const unfollowUser = async (req: Request, res: Response) => {
     try {
       const follow = await Follows.findOne({
         follower: userId,
-        following: targetUserId,
+        following: user._id,
         isDeleted: false,
       });
 
