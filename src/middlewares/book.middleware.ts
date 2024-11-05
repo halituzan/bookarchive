@@ -213,14 +213,27 @@ export const getUserBook = async (
   res: Response,
   next: () => void
 ) => {
-  const { userId, type } = req.params;
+  const { userName, type } = req.params;
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
   const sortType = req.query.sortType ?? "createdAt";
   const sortDirection = req.query.sort === "asc" ? 1 : -1;
 
   try {
-    const data = await Books.find({ userId, isDeleted: false, type })
+    const user: any = await Users.findOne({ userName });
+    console.log("user", user);
+
+    if (!user) {
+      return res.status(403).json({
+        status: false,
+        message: "Böyle bir kullanıcı mevcut değil.",
+      });
+    }
+    const data = await Books.find({
+      userId: user._id,
+      isDeleted: false,
+      type,
+    })
       .populate("bookId")
       .sort({ [sortType as string]: sortDirection }) // sortType alanına göre sıralama
       .skip((page - 1) * limit) // Sayfalama için atlama
@@ -228,7 +241,11 @@ export const getUserBook = async (
       .exec();
 
     // Toplam kitap sayısı
-    const total = await Books.countDocuments({ userId, isDeleted: false });
+    const total = await Books.countDocuments({
+      userId: user._id,
+      isDeleted: false,
+      type,
+    });
 
     return res.json({
       status: true,

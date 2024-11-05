@@ -15,7 +15,7 @@ router.post(`${CONFIG.version}/createBook`, createBook);
 // Kullanıcının kendisi için kitap ekleme endpointi (Kitap Listesinden)
 router.post(`${CONFIG.version}/user/createBookFromList`, createBookFromList);
 // Kullanıcıya ait kitapların listesi
-router.get(`${CONFIG.version}/user/books/:userId/:type`, getUserBook);
+router.get(`${CONFIG.version}/user/books/:userName/:type`, getUserBook);
 // Kullanıcının kitabını soft delete eden endpoint
 router.delete(`${CONFIG.version}/user/books/:bookId`, deleteUserBook);
 // Tüm kitapların döndüğü endpoine
