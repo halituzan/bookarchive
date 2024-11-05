@@ -10,6 +10,7 @@ interface IBook extends Document {
   createdAt: Date;
   updatedAt: Date;
   isDeleted: boolean;
+  slug?: string;
 }
 
 // type:
@@ -22,6 +23,7 @@ const bookSchema = new Schema<IBook>(
     bookId: { type: Schema.Types.ObjectId, ref: "BookLists", required: true },
     // book: { type: Schema.Types.ObjectId, ref: "BookLists", required: true },
     process: { type: Object, required: true },
+    slug: { type: String },
     isFavorite: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
   },

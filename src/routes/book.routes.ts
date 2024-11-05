@@ -21,9 +21,6 @@ router.delete(`${CONFIG.version}/user/books/:bookId`, deleteUserBook);
 // Tüm kitapların döndüğü endpoine
 router.get(`${CONFIG.version}/book/allBooks`, getAllBook);
 // Kategoriye gmre tüm kitapların döndüğü endpoine
-router.get(
-  `${CONFIG.version}/book/byCategory/:bookType`,
-  getAllBookByCategory
-);
+router.get(`${CONFIG.version}/book/byCategory/:bookType`, getAllBookByCategory);
 
 export { router as bookRoutes };

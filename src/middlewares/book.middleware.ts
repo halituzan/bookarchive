@@ -6,6 +6,9 @@ import tokenCheck from "../helpers/tokenCheck";
 import categoryTypes from "../helpers/categoryTypes";
 import { tokenErrorMessage } from "../helpers/tokenErrorMessage";
 import BookLists from "../models/allBook.model";
+import slugify from "slugify";
+import { generateCode } from "../helpers/slugHelpers/generateCode";
+import { generateSlug } from "../helpers/slugHelpers/slugGenerator";
 type CreateBookProps = {
   name: string;
   author: string;
@@ -16,6 +19,7 @@ type CreateBookProps = {
   explanation?: string;
   book_img?: string;
   userId: string;
+  slug?: string;
 };
 type BookProps = {
   title?: string;
@@ -28,6 +32,7 @@ type BookProps = {
   bookId?: string;
   book?: string;
   process?: any;
+  slug?: string;
 };
 
 // Tüm kitapların listesine kitap ekleniyor
@@ -70,6 +75,17 @@ export const createBook = async (
         explanation,
         userId,
       };
+      const slug = slugify(name);
+      console.log("slug", slug);
+
+      const bookSlugChecked = await Books.findOne({ slug });
+
+      if (bookSlugChecked) {
+        const code = generateCode();
+        payload.slug = slug + "-" + code.toUpperCase();
+      } else {
+        payload.slug = slug;
+      }
 
       if (book_img) payload.book_img = book_img;
       if (ISBN) payload.ISBN = ISBN;
@@ -165,6 +181,11 @@ export const createBookFromList = async (
         });
       }
 
+      const slug = await generateSlug(book.name as string);
+
+      if (slug) {
+        payload.slug = slug;
+      }
       if (!book.pages_count) {
         payload.process = {
           pageCount: null,
@@ -418,7 +439,7 @@ export const getAllBookByCategory = async (
   const categoryType = categoryTypes(bookType);
   console.log("categoryType", categoryType);
   console.log("BURADA HATA VAR ERROR");
-  console.log("ENUM lara göre düzenle")
+  console.log("ENUM lara göre düzenle");
   // ! Buralara bak hacı
   // Geçerli bir kategori bulunmazsa hata döndürür
   if (!categoryType) {
