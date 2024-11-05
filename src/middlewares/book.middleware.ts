@@ -221,7 +221,6 @@ export const getUserBook = async (
 
   try {
     const user: any = await Users.findOne({ userName });
-    console.log("user", user);
 
     if (!user) {
       return res.status(403).json({
