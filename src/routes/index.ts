@@ -5,7 +5,7 @@ import { bookPostRoutes } from "./post.routes";
 import { enumRoutes } from "./enum.routes";
 import { followRoutes } from "./follow.routes";
 import { noteRoutes } from "./note.routes";
-
+import { upgradeRoutes } from "./upgrade.routes";
 export {
   authRoutes,
   bookRoutes,
@@ -14,4 +14,5 @@ export {
   enumRoutes,
   followRoutes,
   noteRoutes,
+  upgradeRoutes,
 };
