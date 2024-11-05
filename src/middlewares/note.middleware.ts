@@ -4,6 +4,7 @@ import tokenCheck from "../helpers/tokenCheck";
 import { tokenErrorMessage } from "../helpers/tokenErrorMessage";
 import Users from "../models/user.model";
 import Notes from "../models/note.model";
+import Books from "../models/book.model";
 
 type NoteTypes = {
   user: string;
@@ -11,6 +12,11 @@ type NoteTypes = {
   note: string;
   notePage: number | null;
 };
+interface BookProcess {
+  process: {
+    pageCount: number;
+  };
+}
 // Bir kitaba not eklemek için kullanılır
 export const createNote = async (req: Request, res: Response) => {
   const { userBookId, note, notePage } = req.body;
@@ -125,6 +131,30 @@ export const updateUserBoookNote = async (req: Request, res: Response) => {
           message: "Böyle bir kullanıcı mevcut değil.",
         });
       }
+
+      const currentNote = await Notes.findById(noteId);
+      if (!currentNote) {
+        return res.status(400).json({
+          status: false,
+          message: "Böyle bir not mevcut değil.",
+        });
+      }
+
+      const currentBook = (await Books.findById(
+        currentNote.userBook
+      )) as BookProcess;
+
+      if (
+        currentBook?.process &&
+        currentBook?.process?.pageCount &&
+        currentBook?.process?.pageCount < notePage
+      ) {
+        return res.status(400).json({
+          status: false,
+          message: "Notun sayfa sayısı kitap sayfa sayısından büyük olamaz",
+        });
+      }
+
       let payload: any = {};
 
       if (note) payload.note = note;

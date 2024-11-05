@@ -8,9 +8,9 @@ import {
   updateUserBoookNote,
 } from "../middlewares/note.middleware";
 
-router.post(`${CONFIG.version}/note/create`, createNote);
-router.post(`${CONFIG.version}/note/delete`, deleteUserBoookNote);
-router.patch(`${CONFIG.version}/note/update`, updateUserBoookNote);
-router.get(`${CONFIG.version}/note/getNotes/:userBook`, getUserBookNote);
+router.post(`${CONFIG.version}/create`, createNote);
+router.post(`${CONFIG.version}/delete`, deleteUserBoookNote);
+router.patch(`${CONFIG.version}/update`, updateUserBoookNote);
+router.get(`${CONFIG.version}/getNotes/:userBook`, getUserBookNote);
 
 export { router as noteRoutes };

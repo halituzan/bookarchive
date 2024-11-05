@@ -53,4 +53,4 @@ app.use("/", userRoutes);
 app.use("/", bookPostRoutes);
 app.use("/", enumRoutes);
 app.use("/", followRoutes);
-app.use("/", noteRoutes);
+app.use("/note/", noteRoutes);
