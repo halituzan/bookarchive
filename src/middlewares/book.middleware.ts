@@ -233,7 +233,13 @@ export const getUserBook = async (
       isDeleted: false,
       type,
     })
-      .populate("bookId")
+      .populate({
+        path: "bookId",
+        populate: [
+          { path: "author" }, // bookId içindeki author alanını populate et
+          { path: "publisher" }, // bookId içindeki publisher alanını populate et
+        ],
+      })
       .sort({ [sortType as string]: sortDirection }) // sortType alanına göre sıralama
       .skip((page - 1) * limit) // Sayfalama için atlama
       .limit(limit)
