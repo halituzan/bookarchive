@@ -11,6 +11,7 @@ interface IAllBook extends Document {
   explanation?: string;
   ISBN?: number | null;
   book_img?: string | null;
+  slug: string;
 }
 
 const allBookSchema = new Schema<IAllBook>(
@@ -33,6 +34,7 @@ const allBookSchema = new Schema<IAllBook>(
 
     ISBN: { type: Number, default: null },
     book_img: { type: String, default: "" },
+    slug: { type: String },
   },
   { timestamps: true }
 );
