@@ -3,9 +3,9 @@ import jwt from "jsonwebtoken";
 import Books from "../models/book.model";
 import Users from "../models/user.model";
 import tokenCheck from "../helpers/tokenCheck";
-import AllBooks from "../models/allBook.model";
 import categoryTypes from "../helpers/categoryTypes";
 import { tokenErrorMessage } from "../helpers/tokenErrorMessage";
+import BookLists from "../models/allBook.model";
 type CreateBookProps = {
   name: string;
   author: string;
@@ -74,7 +74,7 @@ export const createBook = async (
       if (book_img) payload.book_img = book_img;
       if (ISBN) payload.ISBN = ISBN;
 
-      const newBook = new AllBooks(payload);
+      const newBook = new BookLists(payload);
 
       await newBook.save();
       return res.json({
@@ -145,7 +145,7 @@ export const createBookFromList = async (
         });
       }
 
-      const book = await AllBooks.findById(bookId);
+      const book = await BookLists.findById(bookId);
 
       let payload: BookProps = {
         type,
@@ -348,7 +348,7 @@ export const getAllBook = async (
   }
 
   try {
-    const data = await AllBooks.aggregate([
+    const data = await BookLists.aggregate([
       { $match: matchStage },
       { $sort: { [sortType as string]: sortDirection } },
       { $skip: (page - 1) * limit },
@@ -356,7 +356,7 @@ export const getAllBook = async (
       {
         $lookup: {
           from: "publishertypes", // İlişkilendirilmiş koleksiyonun adı
-          localField: "publisher", // AllBooks koleksiyonundaki referans alanı
+          localField: "publisher", // BookLists koleksiyonundaki referans alanı
           foreignField: "_id", // publishertypes koleksiyonundaki eşleşen alan
           as: "publisherData", // Sonuçta elde edilecek alan adı
         },
@@ -387,7 +387,7 @@ export const getAllBook = async (
     }));
 
     // Toplam kitap sayısı
-    const total = await AllBooks.countDocuments(matchStage);
+    const total = await BookLists.countDocuments(matchStage);
 
     return res.json({
       status: true,
@@ -417,7 +417,9 @@ export const getAllBookByCategory = async (
 
   const categoryType = categoryTypes(bookType);
   console.log("categoryType", categoryType);
-
+  console.log("BURADA HATA VAR ERROR");
+  console.log("ENUM lara göre düzenle")
+  // ! Buralara bak hacı
   // Geçerli bir kategori bulunmazsa hata döndürür
   if (!categoryType) {
     return res
@@ -434,7 +436,7 @@ export const getAllBookByCategory = async (
   };
 
   try {
-    const data = await AllBooks.aggregate([
+    const data = await BookLists.aggregate([
       { $match: searchCriteria },
       { $sort: { [sortType as string]: sortDirection } },
       { $skip: (page - 1) * limit },
@@ -442,7 +444,7 @@ export const getAllBookByCategory = async (
     ]);
 
     // Toplam kitap sayısı
-    const total = await AllBooks.countDocuments(searchCriteria);
+    const total = await BookLists.countDocuments(searchCriteria);
 
     return res.json({
       status: true,
