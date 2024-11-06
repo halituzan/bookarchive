@@ -33,6 +33,7 @@ type BookProps = {
   book?: string;
   process?: any;
   slug?: string;
+  userBookId?: string;
 };
 
 // Tüm kitapların listesine kitap ekleniyor
@@ -222,6 +223,117 @@ export const createBookFromList = async (
         status: true,
         message: "Kitap başarılı bir şekilde eklendi",
       });
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ status: false, message: "Sunucu hatası" });
+  }
+};
+// User a kitap ekleniyor
+export const updateBookFromList = async (
+  req: Request,
+  res: Response,
+  next: () => void
+) => {
+  const { userBookId, isFavorite, type, readCount } = req.body;
+  const token = tokenCheck(req, res) as any;
+  const secretKey = process.env.JWT_SECRET_KEY || "";
+  if (!type) {
+    return res.status(400).json({
+      status: false,
+      message: "type is required",
+    });
+  }
+  if (!userBookId) {
+    return res.status(400).json({
+      status: false,
+      message: "userBookId is required",
+    });
+  }
+
+  try {
+    jwt.verify(token, secretKey, async (err: any, decoded: any) => {
+      const errorResponse = await tokenErrorMessage(err, res, decoded?.userId);
+      if (errorResponse) return;
+      const userId = decoded?.userId;
+
+      const user = await Users.findById(userId);
+      if (!user) {
+        return res.status(403).json({
+          status: false,
+          message: "Böyle bir kullanıcı mevcut değil.",
+        });
+      }
+
+      const currentBook: any = await Books.findOne({ _id: userBookId });
+      console.log("currentBook", currentBook);
+
+      if (!currentBook) {
+        return res.status(400).json({
+          status: false,
+          message: "Kitap bulunamadı",
+        });
+      } else {
+        if (
+          currentBook.process?.pageCount &&
+          readCount > currentBook.process?.pageCount
+        ) {
+          return res.status(400).json({
+            status: false,
+            message:
+              "Girilen sayfa sayısı kitabın sayfa sayısından büyük olamaz.",
+          });
+        }
+        let payload: any = {
+          type,
+        };
+        if (typeof isFavorite === "boolean") payload.isFavorite = isFavorite;
+
+        if (!currentBook.process.pageCount) {
+          payload.process = {
+            pageCount: null,
+            readCount: null,
+            percent: null,
+          };
+        } else {
+          if (type === "0")
+            payload.process = {
+              pageCount: currentBook.process?.pageCount,
+              readCount: currentBook.process?.pageCount,
+              percent: "100", // 0 - 100 arası yüzdelik
+            };
+          if (type === "1" && readCount)
+            payload.process = {
+              pageCount: currentBook.process?.pageCount,
+              readCount: readCount ?? 0,
+              percent: readCount
+                ? ((readCount / currentBook.process?.pageCount) * 100).toFixed(
+                    2
+                  )
+                : "0", // 0 - 100 arası yüzdelik
+            };
+          if (type === "2")
+            payload.process = {
+              pageCount: currentBook.process?.pageCount,
+              readCount: 0,
+              percent: "0", // 0 - 100 arası yüzdelik
+            };
+        }
+
+        const data = await Books.findOneAndUpdate(
+          { _id: userBookId },
+          payload,
+          {
+            new: true,
+          }
+        );
+
+        return res.json({
+          status: true,
+          message: "Kitap başarılı bir şekilde güncellendi.",
+          data,
+        });
+      }
     });
   } catch (error) {
     console.error(error);

@@ -8,12 +8,15 @@ import {
   getAllBook,
   getAllBookByCategory,
   getUserBook,
+  updateBookFromList,
 } from "../middlewares/book.middleware";
 
 // Kullanıcının kitap listesine kitap ekleme endpointi
 router.post(`${CONFIG.version}/createBook`, createBook);
 // Kullanıcının kendisi için kitap ekleme endpointi (Kitap Listesinden)
 router.post(`${CONFIG.version}/user/createBookFromList`, createBookFromList);
+// Kullanıcının kendisi için eklediği kitabı update ediyor
+router.patch(`${CONFIG.version}/user/updateBookFromList`, updateBookFromList);
 // Kullanıcıya ait kitapların listesi
 router.get(`${CONFIG.version}/user/books/:userName/:type`, getUserBook);
 // Kullanıcının kitabını soft delete eden endpoint
