@@ -6,6 +6,7 @@ import { enumRoutes } from "./enum.routes";
 import { followRoutes } from "./follow.routes";
 import { noteRoutes } from "./note.routes";
 import { upgradeRoutes } from "./upgrade.routes";
+import { openLibraryRoutes } from "./ThirdPartiesApi/openLibrary.routes";
 export {
   authRoutes,
   bookRoutes,
@@ -15,4 +16,5 @@ export {
   followRoutes,
   noteRoutes,
   upgradeRoutes,
+  openLibraryRoutes,
 };

@@ -12,6 +12,7 @@ import {
   enumRoutes,
   followRoutes,
   noteRoutes,
+  openLibraryRoutes,
   upgradeRoutes,
   userRoutes,
 } from "./routes";
@@ -56,3 +57,4 @@ app.use("/", enumRoutes);
 app.use("/", followRoutes);
 app.use("/note/", noteRoutes);
 app.use("/upgrade/", upgradeRoutes);
+app.use("/third/openLibrary/", openLibraryRoutes);
