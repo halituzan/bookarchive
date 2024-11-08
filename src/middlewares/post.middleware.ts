@@ -90,6 +90,15 @@ export const getUserPosts = async (
       .json({ message: "Böyle bir kullanıcı mevcut değil." });
   }
   const posts = await BookPosts.find({ user: user.id, isDeleted: false })
+    .populate({
+      path: "book",
+      select: "-__v",
+    })
+    .populate({
+      path: "user",
+      select: "-password -__v",
+    })
+    .select("-__v")
     .sort({ createdAt: sortDirection }) // oluşturma tarihine göre sıralama
     .skip((page - 1) * limit) // Sayfalama için atlama
     .limit(limit)
