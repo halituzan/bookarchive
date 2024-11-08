@@ -92,7 +92,12 @@ export const getUserPosts = async (
   const posts = await BookPosts.find({ user: user.id, isDeleted: false })
     .populate({
       path: "book",
-      select: "-__v",
+      populate: {
+        path: "bookId", // Populate the bookId within book
+        populate: {
+          path: "author",
+        },
+      },
     })
     .populate({
       path: "user",
