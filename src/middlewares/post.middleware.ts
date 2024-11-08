@@ -6,8 +6,8 @@ import tokenCheck from "../helpers/tokenCheck";
 import BookPosts from "../models/bookPost.model";
 type BookPostProps = {
   content: string;
-  userId: string;
-  bookId: string;
+  user: string;
+  book: string;
 };
 // Kullanıcının paylaşım oluşturduğu endpoint
 export const createBookPost = async (
@@ -54,8 +54,8 @@ export const createBookPost = async (
 
       let payload: BookPostProps = {
         content,
-        bookId,
-        userId,
+        book: bookId,
+        user: userId,
       };
 
       const newBook = new BookPosts(payload);
@@ -77,25 +77,29 @@ export const getUserPosts = async (
   res: Response,
   next: () => void
 ) => {
-  const { userId } = req.params;
+  const { userName } = req.params;
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
   const sortDirection = req.query.sort === "asc" ? 1 : -1;
   // Tablodan ilgili userId ile user a ulaşıyoruz.
-  const user = await Users.findById(userId);
+  const user = await Users.findOne({ userName: userName });
+  console.log(user);
   if (!user) {
     return res
       .status(400)
       .json({ message: "Böyle bir kullanıcı mevcut değil." });
   }
-  const posts = await BookPosts.find({ userId, isDeleted: false })
+  const posts = await BookPosts.find({ user: user.id, isDeleted: false })
     .sort({ createdAt: sortDirection }) // oluşturma tarihine göre sıralama
     .skip((page - 1) * limit) // Sayfalama için atlama
     .limit(limit)
     .exec();
 
   // Toplam kitap sayısı
-  const total = await BookPosts.countDocuments({ userId, isDeleted: false });
+  const total = await BookPosts.countDocuments({
+    user: user._id,
+    isDeleted: false,
+  });
   return res.json({
     status: true,
     page,

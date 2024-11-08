@@ -6,7 +6,7 @@ import { createBookPost, getPosts, getUserPosts } from "../middlewares/post.midd
 // Kullanıcının paylaşım ekleme endpointi
 router.post(`${CONFIG.version}/posts/user/create`, createBookPost);
 // Kullanıcının paylaşımlarının çekildiği endpoint
-router.get(`${CONFIG.version}/posts/user/get/:userId`, getUserPosts);
+router.get(`${CONFIG.version}/posts/user/get/:userName`, getUserPosts);
 // Tüm paylaşımların çekildiği endpoint
 router.get(`${CONFIG.version}/posts/get/`, getPosts);
 
