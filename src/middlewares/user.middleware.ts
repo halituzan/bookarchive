@@ -115,7 +115,7 @@ export const getUserProfile = async (
 ) => {
   const { userName } = req.params;
   try {
-    const user: any = await Users.findOne({ userName }).select(
+    const user: any = await Users.findOne({ userName: userName }).select(
       "-password -__v"
     );
     if (!user) {
@@ -128,6 +128,7 @@ export const getUserProfile = async (
     jwt.verify(token, secretKey, async (err: any, decoded: any) => {
       let payload: any = {
         status: true,
+        isFollow: false,
       };
       const userId = decoded?.userId;
       const profile: any = await Users.findOne({ userName }).select(
@@ -177,6 +178,12 @@ export const getUserProfile = async (
           payload.isEditable = true;
           // profilin id si userId ile eşittir ve duzenlenebilir profildir. Yani aslında kendisidir.
         } else {
+          const isFollow = await Follows.findOne({
+            follower: userId,
+            following: profile._id,
+            isDeleted: false,
+          });
+          payload.isFollow = isFollow ? true : false;
           payload.isSelf = false;
           // profilin id si userId ile eşit değildir ve kendisi değildir.
           payload.isEditable = false;
