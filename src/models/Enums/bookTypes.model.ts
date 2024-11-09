@@ -1,4 +1,4 @@
-// book.model.ts
+// bookType.model.ts
 import { Schema, model } from "mongoose";
 import { EnumTypes } from "../../types/enum.types";
 

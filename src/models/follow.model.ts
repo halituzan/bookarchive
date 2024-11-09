@@ -1,3 +1,4 @@
+// follow.model.ts
 import mongoose, { Schema, Document } from "mongoose";
 
 interface IFollow extends Document {
