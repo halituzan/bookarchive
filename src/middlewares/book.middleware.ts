@@ -593,3 +593,44 @@ export const getAllBookByCategory = async (
     return res.status(500).json({ status: false, message: "Sunucu hatası" });
   }
 };
+// Kitap detayını listeler
+export const getSingleBook = async (
+  req: Request,
+  res: Response,
+  next: () => void
+) => {
+  const { slug } = req.params;
+  console.log("slug", slug);
+
+  if (!slug) {
+    return res.status(403).json({
+      status: false,
+      message: "slug gereklidir.",
+    });
+  }
+  try {
+    const data = await Books.findOne({ slug })
+      .populate("userId", "-password -__v")
+      .populate({
+        path: "bookId",
+        populate: {
+          path: "author publisher",
+        },
+      });
+
+    if (!data) {
+      return res.status(403).json({
+        status: false,
+        message: "Böyle bir kitap mevcut değil.",
+      });
+    } else {
+      return res.json({
+        status: true,
+        data,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ status: false, message: "Sunucu hatası" });
+  }
+};

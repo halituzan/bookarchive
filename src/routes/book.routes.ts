@@ -7,6 +7,7 @@ import {
   deleteUserBook,
   getAllBook,
   getAllBookByCategory,
+  getSingleBook,
   getUserBook,
   updateBookFromList,
 } from "../middlewares/book.middleware";
@@ -25,5 +26,7 @@ router.delete(`${CONFIG.version}/user/books/:bookId`, deleteUserBook);
 router.get(`${CONFIG.version}/book/allBooks`, getAllBook);
 // Kategoriye gmre tüm kitapların döndüğü endpoine
 router.get(`${CONFIG.version}/book/byCategory/:bookType`, getAllBookByCategory);
+// Eklenmiş bir kitabın detayını getirir.
+router.get(`${CONFIG.version}/book/user/single/:slug`, getSingleBook);
 
 export { router as bookRoutes };
