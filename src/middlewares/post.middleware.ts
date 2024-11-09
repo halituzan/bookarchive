@@ -173,8 +173,6 @@ export const getPosts = async (
     .limit(limit)
     .exec();
 
-  console.log("posts", posts);
-
   // Toplam kitap sayısı
   const total = await BookPosts.countDocuments({ isDeleted: false });
   return res.json({
@@ -186,4 +184,46 @@ export const getPosts = async (
     sort: req.query.sort || "desc",
     data: posts,
   });
+};
+
+export const getSinglePost = async (
+  req: Request,
+  res: Response,
+  next: () => void
+) => {
+  const { postId } = req.params;
+  if (!postId)
+    return res.json({ status: false, message: "postId gereklidir." });
+
+  try {
+    const data = await BookPosts.findById(postId)
+      .populate({
+        path: "book",
+        populate: {
+          path: "bookId", // Populate the bookId within book
+          populate: {
+            path: "author",
+          },
+        },
+      })
+      .populate({
+        path: "user",
+        select: "-password -__v",
+      })
+      .populate({
+        path: "comments",
+        match: { isDeleted: false },
+        populate: {
+          path: "user",
+          select: "-password -__v",
+        },
+      });
+    return res.json({
+      status: true,
+      data,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ status: false, message: error });
+  }
 };
