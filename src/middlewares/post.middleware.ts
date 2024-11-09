@@ -135,8 +135,21 @@ export const getPosts = async (
   const sortDirection = req.query.sort === "asc" ? 1 : -1;
 
   const posts = await BookPosts.find({ isDeleted: false })
-    .populate("userId", "userName firstName lastName image") // Users koleksiyonundaki user bilgilerini çekmek için
-    .populate("bookId", "title author description type image") // Books koleksiyonundaki book bilgilerini çekmek için
+    // .populate("user", "userName firstName lastName image") // Users koleksiyonundaki user bilgilerini çekmek için
+    // .populate("book", "title author description type image") // Books koleksiyonundaki book bilgilerini çekmek için
+    .populate({
+      path: "book",
+      populate: {
+        path: "bookId", // Populate the bookId within book
+        populate: {
+          path: "author",
+        },
+      },
+    })
+    .populate({
+      path: "user",
+      select: "-password -__v",
+    })
     .sort({ createdAt: sortDirection }) // oluşturma tarihine göre sıralama
     .skip((page - 1) * limit) // Sayfalama için atlama
     .limit(limit)
