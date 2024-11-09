@@ -1,3 +1,4 @@
+// src/models/bookPostComment.model.ts
 import { Schema, model } from "mongoose";
 import { refTypes } from "../types/global.types";
 

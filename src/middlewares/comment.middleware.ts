@@ -1,9 +1,11 @@
+// src/middlaware/comment.middleware.ts
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import tokenCheck from "../helpers/tokenCheck";
 import { tokenErrorMessage } from "../helpers/tokenErrorMessage";
 import Users from "../models/user.model";
 import BookPostsComments from "../models/bookPostsComment.model";
+import BookPosts from "../models/bookPost.model";
 
 interface CommentTypes {
   user: string;
@@ -51,11 +53,37 @@ export const createBookPostComments = async (
       };
       const newComment = new BookPostsComments(payload);
       await newComment.save();
+
+      // Yorumun post dökümanına eklenmesi
+      await BookPosts.findByIdAndUpdate(postId, {
+        $push: { comments: newComment._id },
+      });
+
       return res.json({
         status: true,
         message: "Yorum başarılı bir şekilde eklendi",
         data: newComment,
       });
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ status: false, message: "Sunucu hatası" });
+  }
+};
+
+export const getBookPostComments = async (
+  req: Request,
+  res: Response,
+  next: () => void
+) => {
+  const { postId } = req.params;
+
+  try {
+    const comments = await BookPostsComments.find({ post: postId });
+
+    return res.json({
+      status: true,
+      data: comments,
     });
   } catch (error) {
     console.error(error);

@@ -4,6 +4,7 @@ import Books from "../models/book.model";
 import Users from "../models/user.model";
 import tokenCheck from "../helpers/tokenCheck";
 import BookPosts from "../models/bookPost.model";
+import BookPostsComments from "../models/bookPostsComment.model";
 type BookPostProps = {
   content: string;
   user: string;
@@ -81,19 +82,19 @@ export const getUserPosts = async (
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
   const sortDirection = req.query.sort === "asc" ? 1 : -1;
-  // Tablodan ilgili userId ile user a ulaşıyoruz.
+
   const user = await Users.findOne({ userName: userName });
-  console.log(user);
   if (!user) {
     return res
       .status(400)
       .json({ message: "Böyle bir kullanıcı mevcut değil." });
   }
+
   const posts = await BookPosts.find({ user: user.id, isDeleted: false })
     .populate({
       path: "book",
       populate: {
-        path: "bookId", // Populate the bookId within book
+        path: "bookId",
         populate: {
           path: "author",
         },
@@ -103,17 +104,25 @@ export const getUserPosts = async (
       path: "user",
       select: "-password -__v",
     })
+    .populate({
+      path: "comments",
+      match: { isDeleted: false },
+      populate: {
+        path: "user",
+        select: "-password -__v",
+      },
+    })
     .select("-__v")
-    .sort({ createdAt: sortDirection }) // oluşturma tarihine göre sıralama
-    .skip((page - 1) * limit) // Sayfalama için atlama
+    .sort({ createdAt: sortDirection })
+    .skip((page - 1) * limit)
     .limit(limit)
     .exec();
 
-  // Toplam kitap sayısı
   const total = await BookPosts.countDocuments({
     user: user._id,
     isDeleted: false,
   });
+
   return res.json({
     status: true,
     page,
@@ -124,6 +133,7 @@ export const getUserPosts = async (
     data: posts,
   });
 };
+
 // Tüm paylaşımların çekildiği endpoint
 export const getPosts = async (
   req: Request,
@@ -149,6 +159,14 @@ export const getPosts = async (
     .populate({
       path: "user",
       select: "-password -__v",
+    })
+    .populate({
+      path: "comments",
+      match: { isDeleted: false },
+      populate: {
+        path: "user",
+        select: "-password -__v",
+      },
     })
     .sort({ createdAt: sortDirection }) // oluşturma tarihine göre sıralama
     .skip((page - 1) * limit) // Sayfalama için atlama
