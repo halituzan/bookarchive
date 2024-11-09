@@ -16,6 +16,7 @@ import {
   upgradeRoutes,
   userRoutes,
 } from "./routes";
+import { bookPostCommentRoutes } from "./routes/comment.routes";
 dotenv.config();
 
 const app: Express = express();
@@ -57,4 +58,5 @@ app.use("/", enumRoutes);
 app.use("/", followRoutes);
 app.use("/note/", noteRoutes);
 app.use("/upgrade/", upgradeRoutes);
+app.use("/comment/", bookPostCommentRoutes);
 app.use("/third/openLibrary/", openLibraryRoutes);
