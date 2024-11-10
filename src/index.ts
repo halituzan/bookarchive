@@ -32,7 +32,7 @@ mongoose
   .connect(
     `mongodb+srv://${encodeURIComponent(userName)}:${encodeURIComponent(
       password
-    )}@cluster0.ux1rlrp.mongodb.net/${dbName}?retryWrites=true&w=majority`
+    )}@cluster0.ux1rlrp.mongodb.net/${dbName}?retryWrites=true&w=majority&socketTimeoutMS=0&connectTimeoutMS=0`
   )
   .then(() => {
     console.log("DB connected");
@@ -60,4 +60,4 @@ app.use("/note/", noteRoutes);
 app.use("/comment/", bookPostCommentRoutes);
 app.use("/third/openLibrary/", openLibraryRoutes);
 // kaldırılacak routelar
-app.use("/upgrade/", upgradeRoutes); 
+app.use("/upgrade/", upgradeRoutes);
