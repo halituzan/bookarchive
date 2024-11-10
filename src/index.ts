@@ -57,6 +57,7 @@ app.use("/posts/", bookPostRoutes);
 app.use("/enum/", enumRoutes);
 app.use("/follow/", followRoutes);
 app.use("/note/", noteRoutes);
-app.use("/upgrade/", upgradeRoutes);
 app.use("/comment/", bookPostCommentRoutes);
 app.use("/third/openLibrary/", openLibraryRoutes);
+// kaldırılacak routelar
+app.use("/upgrade/", upgradeRoutes); 

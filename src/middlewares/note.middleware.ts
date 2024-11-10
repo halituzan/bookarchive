@@ -84,9 +84,7 @@ export const createNote = async (req: Request, res: Response) => {
 };
 // Kitaptaki bir notu silmeye yarar
 export const deleteUserBoookNote = async (req: Request, res: Response) => {
-  const { userBookId } = req.body;
-  console.log("userBookId", userBookId);
-
+  const { userBookNoteId } = req.body;
   const token = tokenCheck(req, res) as any;
   const secretKey = process.env.JWT_SECRET_KEY || "";
   try {
@@ -100,7 +98,7 @@ export const deleteUserBoookNote = async (req: Request, res: Response) => {
           message: "Böyle bir kullanıcı mevcut değil.",
         });
       await Notes.findOneAndUpdate(
-        { _id: userBookId },
+        { _id: userBookNoteId },
         { $set: { isDeleted: true } }
       );
       return res.json({
