@@ -11,7 +11,12 @@ type NoteTypes = {
   userBook: string;
   note: string;
   notePage: number | null;
+  isPublic?: string;
 };
+// isPublic
+// 0 = public
+// 1 = private
+// 2 = only friends
 interface BookProcess {
   process: {
     pageCount: number;
@@ -19,7 +24,7 @@ interface BookProcess {
 }
 // Bir kitaba not eklemek için kullanılır
 export const createNote = async (req: Request, res: Response) => {
-  const { userBookId, note, notePage } = req.body;
+  const { userBookId, note, notePage, isPublic } = req.body;
   const token = tokenCheck(req, res) as any;
   const secretKey = process.env.JWT_SECRET_KEY || "";
 
@@ -57,11 +62,13 @@ export const createNote = async (req: Request, res: Response) => {
         note,
         notePage,
       };
-      if (notePage) {
-        payload.notePage = notePage;
-      } else {
-        payload.notePage = null;
-      }
+
+      if (notePage) payload.notePage = notePage;
+      else payload.notePage = null;
+
+      if (isPublic) payload.isPublic = isPublic;
+      else payload.isPublic = "0";
+
       const newNote = new Notes(payload);
       await newNote.save();
       return res.json({
@@ -108,7 +115,7 @@ export const deleteUserBoookNote = async (req: Request, res: Response) => {
 };
 // Kitaptaki bir notu update etmeye yarar
 export const updateUserBoookNote = async (req: Request, res: Response) => {
-  const { noteId, note, notePage } = req.body;
+  const { noteId, note, notePage, isPublic } = req.body;
   const token = tokenCheck(req, res) as any;
   const secretKey = process.env.JWT_SECRET_KEY || "";
 
@@ -159,6 +166,7 @@ export const updateUserBoookNote = async (req: Request, res: Response) => {
 
       if (note) payload.note = note;
       if (notePage) payload.notePage = notePage;
+      if (isPublic) payload.notePage = isPublic;
 
       const noteUpdate = await Notes.findOneAndUpdate(
         { _id: noteId, isDeleted: false },
