@@ -51,11 +51,11 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(express.json());
 app.use("/", authRoutes);
-app.use("/", bookRoutes);
-app.use("/", userRoutes);
-app.use("/", bookPostRoutes);
-app.use("/", enumRoutes);
-app.use("/", followRoutes);
+app.use("/book/", bookRoutes);
+app.use("/user/", userRoutes);
+app.use("/posts/", bookPostRoutes);
+app.use("/enum/", enumRoutes);
+app.use("/follow/", followRoutes);
 app.use("/note/", noteRoutes);
 app.use("/upgrade/", upgradeRoutes);
 app.use("/comment/", bookPostCommentRoutes);

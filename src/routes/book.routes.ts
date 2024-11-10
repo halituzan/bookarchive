@@ -23,10 +23,10 @@ router.get(`${CONFIG.version}/user/books/:userName/:type`, getUserBook);
 // Kullanıcının kitabını soft delete eden endpoint
 router.delete(`${CONFIG.version}/user/books/:bookId`, deleteUserBook);
 // Tüm kitapların döndüğü endpoine
-router.get(`${CONFIG.version}/book/allBooks`, getAllBook);
+router.get(`${CONFIG.version}/allBooks`, getAllBook);
 // Kategoriye gmre tüm kitapların döndüğü endpoine
-router.get(`${CONFIG.version}/book/byCategory/:bookType`, getAllBookByCategory);
+router.get(`${CONFIG.version}/byCategory/:bookType`, getAllBookByCategory);
 // Eklenmiş bir kitabın detayını getirir.
-router.get(`${CONFIG.version}/book/user/single/:slug`, getSingleBook);
+router.get(`${CONFIG.version}/user/single/:slug`, getSingleBook);
 
 export { router as bookRoutes };
