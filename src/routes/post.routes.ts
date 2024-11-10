@@ -11,7 +11,7 @@ import {
 // Kullanıcının paylaşım ekleme endpointi
 router.post(`${CONFIG.version}/user/create`, createBookPost);
 // Kullanıcının paylaşımlarının çekildiği endpoint
-router.get(`${CONFIG.version}/user/get/:userName`, getUserPosts);
+router.get(`${CONFIG.version}/user/:userName`, getUserPosts);
 // Tüm paylaşımların çekildiği endpoint
 router.get(`${CONFIG.version}/get/`, getPosts);
 // Tek Bir paylaşımın çekildiği endpoint
