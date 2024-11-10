@@ -13,7 +13,7 @@ router.post(`${CONFIG.version}/user/create`, createBookPost);
 // Kullanıcının paylaşımlarının çekildiği endpoint
 router.get(`${CONFIG.version}/user/:userName`, getUserPosts);
 // Tüm paylaşımların çekildiği endpoint
-router.get(`${CONFIG.version}/get/`, getPosts);
+router.get(`${CONFIG.version}/all/`, getPosts);
 // Tek Bir paylaşımın çekildiği endpoint
 router.get(`${CONFIG.version}/single/:postId`, getSinglePost);
 

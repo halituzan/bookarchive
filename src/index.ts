@@ -11,6 +11,7 @@ import {
   bookRoutes,
   enumRoutes,
   followRoutes,
+  likesRoutes,
   noteRoutes,
   openLibraryRoutes,
   upgradeRoutes,
@@ -56,6 +57,7 @@ app.use("/user/", userRoutes);
 app.use("/posts/", bookPostRoutes);
 app.use("/enum/", enumRoutes);
 app.use("/follow/", followRoutes);
+app.use("/like/", likesRoutes);
 app.use("/note/", noteRoutes);
 app.use("/comment/", bookPostCommentRoutes);
 app.use("/third/openLibrary/", openLibraryRoutes);
