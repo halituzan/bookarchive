@@ -32,7 +32,7 @@ mongoose
   .connect(
     `mongodb+srv://${encodeURIComponent(userName)}:${encodeURIComponent(
       password
-    )}@cluster0.ux1rlrp.mongodb.net/${dbName}?retryWrites=true&w=majority&socketTimeoutMS=0&connectTimeoutMS=0`
+    )}@cluster0.ux1rlrp.mongodb.net/${dbName}?retryWrites=true&w=majority&socketTimeoutMS=10000&connectTimeoutMS=10000`
   )
   .then(() => {
     console.log("DB connected");
