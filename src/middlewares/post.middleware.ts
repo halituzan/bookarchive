@@ -5,6 +5,7 @@ import Users from "../models/user.model";
 import tokenCheck from "../helpers/tokenCheck";
 import BookPosts from "../models/bookPost.model";
 import BookPostsComments from "../models/bookPostsComment.model";
+import BookPostsLikes from "../models/bookPostsLike.model";
 type BookPostProps = {
   content: string;
   user: string;
@@ -112,6 +113,14 @@ export const getUserPosts = async (
         select: "-password -__v",
       },
     })
+    .populate({
+      path: "likes",
+      match: { isDeleted: false },
+      populate: {
+        path: "user",
+        select: "-password -__v",
+      },
+    })
     .select("-__v")
     .sort({ createdAt: sortDirection })
     .skip((page - 1) * limit)
@@ -168,6 +177,14 @@ export const getPosts = async (
         select: "-password -__v",
       },
     })
+    .populate({
+      path: "likes",
+      match: { isDeleted: false },
+      populate: {
+        path: "user",
+        select: "-password -__v",
+      },
+    })
     .sort({ createdAt: sortDirection }) // oluşturma tarihine göre sıralama
     .skip((page - 1) * limit) // Sayfalama için atlama
     .limit(limit)
@@ -212,6 +229,14 @@ export const getSinglePost = async (
       })
       .populate({
         path: "comments",
+        match: { isDeleted: false },
+        populate: {
+          path: "user",
+          select: "-password -__v",
+        },
+      })
+      .populate({
+        path: "likes",
         match: { isDeleted: false },
         populate: {
           path: "user",

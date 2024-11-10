@@ -7,6 +7,7 @@ interface IBookPost extends refTypes {
   user: Schema.Types.ObjectId;
   book: Schema.Types.ObjectId;
   comments: Schema.Types.ObjectId[];
+  likes: Schema.Types.ObjectId[];
   commentCount?: number; // Optional olarak tanımlanır, sanal alan
   likeCount?: number;
 }
@@ -17,6 +18,7 @@ const bookPostSchema = new Schema<IBookPost>(
     user: { type: Schema.Types.ObjectId, ref: "Users", required: true },
     book: { type: Schema.Types.ObjectId, ref: "Books", required: true },
     comments: [{ type: Schema.Types.ObjectId, ref: "BookPostsComments" }],
+    likes: [{ type: Schema.Types.ObjectId, ref: "BookPostsLikes" }],
     isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
@@ -25,6 +27,9 @@ const bookPostSchema = new Schema<IBookPost>(
 // Sanal alan olarak yorum sayısını ekleyin
 bookPostSchema.virtual("commentCount").get(function () {
   return this.comments.length;
+});
+bookPostSchema.virtual("likeCount").get(function () {
+  return this.likes.length;
 });
 
 const BookPosts = model<IBookPost>("BookPosts", bookPostSchema);
