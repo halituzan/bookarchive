@@ -117,7 +117,7 @@ export const getUserPosts = async (
       path: "likes",
       match: { isDeleted: false },
       populate: {
-        path: "user",
+        path: "post",
         select: "-password -__v",
       },
     })

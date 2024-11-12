@@ -4,6 +4,7 @@ import tokenCheck from "../helpers/tokenCheck";
 import { tokenErrorMessage } from "../helpers/tokenErrorMessage";
 import Users from "../models/user.model";
 import BookPostsLikes from "../models/bookPostsLike.model";
+import BookPosts from "../models/bookPost.model";
 
 export const like = async (req: Request, res: Response) => {
   const { postId } = req.params;
@@ -39,12 +40,19 @@ export const like = async (req: Request, res: Response) => {
       if (likes) {
         likes.isDeleted = true;
         await likes.save();
+        // Yorumun post dökümanına eklenmesi
+
         res
           .status(200)
           .json({ status: true, message: "Paylaşım beğenisi çekildi." });
       } else {
         likes = new BookPostsLikes({ user: user._id, post: postId });
         await likes.save();
+
+        // Like ın post dokumanına eklenmesi
+        await BookPosts.findByIdAndUpdate(postId, {
+          $push: { likes: likes._id },
+        });
         res.status(200).json({ status: true, message: "Paylaşım beğenildi." });
       }
     });
