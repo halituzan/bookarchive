@@ -1,11 +1,9 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import Books from "../models/book.model";
-import Users from "../models/user.model";
 import tokenCheck from "../helpers/tokenCheck";
+import Books from "../models/book.model";
 import BookPosts from "../models/bookPost.model";
-import BookPostsComments from "../models/bookPostsComment.model";
-import BookPostsLikes from "../models/bookPostsLike.model";
+import Users from "../models/user.model";
 type BookPostProps = {
   content: string;
   user: string;
@@ -79,6 +77,12 @@ export const getUserPosts = async (
   res: Response,
   next: () => void
 ) => {
+  const token = req.headers.authorization?.split("Bearer ")[1];
+  let userId: any = {};
+  if (typeof token == "string" && token !== "undefined") {
+    const secretKey = process.env.JWT_SECRET_KEY || "";
+    userId = jwt.verify(token, secretKey);
+  }
   const { userName } = req.params;
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
@@ -118,7 +122,6 @@ export const getUserPosts = async (
       match: { isDeleted: false },
       populate: {
         path: "post",
-        select: "-password -__v",
       },
     })
     .select("-__v")
@@ -126,6 +129,24 @@ export const getUserPosts = async (
     .skip((page - 1) * limit)
     .limit(limit)
     .exec();
+
+  let updatedPosts: any = [];
+
+  if (userId.userId) {
+    updatedPosts = posts.map((post) => {
+      if (!userId.userId) {
+        return;
+      }
+      const isLiked = post.likes.some((like: any) =>
+        like?.user?.equals(userId.userId)
+      ); // userId burada mevcut kullanıcı ID'si
+
+      return {
+        ...post.toObject(), // Mongoose dokümanını düz obje olarak alır
+        isLiked, // isLiked alanını ekliyoruz
+      };
+    });
+  }
 
   const total = await BookPosts.countDocuments({
     user: user._id,
@@ -139,7 +160,7 @@ export const getUserPosts = async (
     total,
     limit,
     sort: req.query.sort || "desc",
-    data: posts,
+    data: userId.userId ? updatedPosts : posts,
   });
 };
 
@@ -150,12 +171,12 @@ export const getPosts = async (
   next: () => void
 ) => {
   const token = req.headers.authorization?.split("Bearer ")[1];
-  if (!token) {
-    return;
+  let userId: any = {};
+  if (typeof token == "string" && token !== "undefined") {
+    const secretKey = process.env.JWT_SECRET_KEY || "";
+    userId = jwt.verify(token, secretKey);
   }
-  const secretKey = process.env.JWT_SECRET_KEY || "";
-  const userId = jwt.verify(token, secretKey);
-  console.log("userId", userId);
+
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
   const sortDirection = req.query.sort === "asc" ? 1 : -1;
@@ -189,7 +210,6 @@ export const getPosts = async (
       match: { isDeleted: false },
       populate: {
         path: "user",
-        select: "-password -__v",
       },
     })
     .sort({ createdAt: sortDirection }) // oluşturma tarihine göre sıralama
@@ -197,13 +217,23 @@ export const getPosts = async (
     .limit(limit)
     .exec();
 
-  const updatedPosts = posts.map((post) => {
-    const isLiked = post.likes.some((like: any) => like?.user?.equals(userId)); // userId burada mevcut kullanıcı ID'si
-    return {
-      ...post.toObject(), // Mongoose dokümanını düz obje olarak alır
-      isLiked, // isLiked alanını ekliyoruz
-    };
-  });
+  let updatedPosts: any = [];
+
+  if (userId.userId) {
+    updatedPosts = posts.map((post) => {
+      if (!userId.userId) {
+        return;
+      }
+      const isLiked = post.likes.some((like: any) =>
+        like?.user?.equals(userId.userId)
+      ); // userId burada mevcut kullanıcı ID'si
+
+      return {
+        ...post.toObject(), // Mongoose dokümanını düz obje olarak alır
+        isLiked, // isLiked alanını ekliyoruz
+      };
+    });
+  }
 
   // Toplam kitap sayısı
   const total = await BookPosts.countDocuments({ isDeleted: false });
@@ -214,7 +244,7 @@ export const getPosts = async (
     total,
     limit,
     sort: req.query.sort || "desc",
-    data: posts,
+    data: userId.userId ? updatedPosts : posts,
   });
 };
 
