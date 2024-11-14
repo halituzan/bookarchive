@@ -6,6 +6,7 @@ import { tokenErrorMessage } from "../helpers/tokenErrorMessage";
 import Users from "../models/user.model";
 import BookPostsComments from "../models/bookPostsComment.model";
 import BookPosts from "../models/bookPost.model";
+import Notifications from "../models/notification.model";
 
 interface CommentTypes {
   user: string;
@@ -55,9 +56,23 @@ export const createBookPostComments = async (
       await newComment.save();
 
       // Yorumun post dökümanına eklenmesi
-      await BookPosts.findByIdAndUpdate(postId, {
+      const post = await BookPosts.findByIdAndUpdate(postId, {
         $push: { comments: newComment._id },
       });
+      if (!post) {
+        return;
+      }
+      console.log("post", post);
+
+      const notificationPayload: any = {
+        user: userId,
+        content: `${post._id}'li paylaşımınıza yorum geldi.`,
+        isRead: false,
+        isDeleted: false,
+      };
+      const notification = new Notifications(notificationPayload);
+      await notification.save();
+      // await Notifications.
 
       return res.json({
         status: true,

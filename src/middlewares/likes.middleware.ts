@@ -40,8 +40,11 @@ export const like = async (req: Request, res: Response) => {
       if (likes) {
         likes.isDeleted = true;
         await likes.save();
-        // Yorumun post dökümanına eklenmesi
 
+        // Yorumun post dökümanına eklenmesi
+        await BookPosts.findByIdAndUpdate(postId, {
+          $pull: { likes: likes._id },
+        });
         res
           .status(200)
           .json({ status: true, message: "Paylaşım beğenisi çekildi." });
@@ -53,6 +56,7 @@ export const like = async (req: Request, res: Response) => {
         await BookPosts.findByIdAndUpdate(postId, {
           $push: { likes: likes._id },
         });
+
         res.status(200).json({ status: true, message: "Paylaşım beğenildi." });
       }
     });
