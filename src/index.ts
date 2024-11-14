@@ -13,6 +13,7 @@ import {
   followRoutes,
   likesRoutes,
   noteRoutes,
+  notificationRoutes,
   openLibraryRoutes,
   upgradeRoutes,
   userRoutes,
@@ -59,6 +60,7 @@ app.use("/enum/", enumRoutes);
 app.use("/follow/", followRoutes);
 app.use("/like/", likesRoutes);
 app.use("/note/", noteRoutes);
+app.use("/notification/", notificationRoutes);
 app.use("/comment/", bookPostCommentRoutes);
 app.use("/third/openLibrary/", openLibraryRoutes);
 // kaldırılacak routelar
