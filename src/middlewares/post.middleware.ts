@@ -149,6 +149,13 @@ export const getPosts = async (
   res: Response,
   next: () => void
 ) => {
+  const token = req.headers.authorization?.split("Bearer ")[1];
+  if (!token) {
+    return;
+  }
+  const secretKey = process.env.JWT_SECRET_KEY || "";
+  const userId = jwt.verify(token, secretKey);
+  console.log("userId", userId);
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
   const sortDirection = req.query.sort === "asc" ? 1 : -1;
@@ -189,6 +196,14 @@ export const getPosts = async (
     .skip((page - 1) * limit) // Sayfalama için atlama
     .limit(limit)
     .exec();
+
+  const updatedPosts = posts.map((post) => {
+    const isLiked = post.likes.some((like: any) => like?.user?.equals(userId)); // userId burada mevcut kullanıcı ID'si
+    return {
+      ...post.toObject(), // Mongoose dokümanını düz obje olarak alır
+      isLiked, // isLiked alanını ekliyoruz
+    };
+  });
 
   // Toplam kitap sayısı
   const total = await BookPosts.countDocuments({ isDeleted: false });
