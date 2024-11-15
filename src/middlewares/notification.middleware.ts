@@ -67,6 +67,9 @@ export const readNotification = async (req: Request, res: Response) => {
 export const getNotifications = async (req: Request, res: Response) => {
   const token = tokenCheck(req, res) as any;
   const secretKey = process.env.JWT_SECRET_KEY || "";
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  const sortDirection = req.query.sort === "asc" ? 1 : -1;
 
   try {
     jwt.verify(token, secretKey, async (err: any, decoded: any) => {
@@ -80,10 +83,29 @@ export const getNotifications = async (req: Request, res: Response) => {
           message: "Böyle bir kullanıcı mevcut değil.",
         });
       }
-      const data = await Notifications.find({ user: userId, isDeleted: false });
+      const data = await Notifications.find({ user: userId, isDeleted: false })
+        .populate({
+          path: "user",
+          select: "-password -__v",
+        })
+        .sort({ createdAt: sortDirection }) // oluşturma tarihine göre sıralama
+        .select("-__v")
+        .skip((page - 1) * limit) // Sayfalama için atlama
+        .limit(limit)
+        .exec();
+
+      const total = await Notifications.countDocuments({
+        user: userId,
+        isDeleted: false,
+      });
 
       return res.json({
         status: true,
+        page,
+        totalPages: Math.ceil(total / limit),
+        total,
+        limit,
+        sort: req.query.sort || "desc",
         data,
       });
     });
