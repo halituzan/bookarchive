@@ -9,6 +9,7 @@ import { notificationRoutes } from "./notification.routes";
 import { likesRoutes } from "./likes.routes";
 import { upgradeRoutes } from "./upgrade.routes";
 import { openLibraryRoutes } from "./ThirdPartiesApi/openLibrary.routes";
+import { messageRoutes } from "./message.routes";
 export {
   authRoutes,
   bookRoutes,
@@ -21,4 +22,5 @@ export {
   upgradeRoutes,
   openLibraryRoutes,
   notificationRoutes,
+  messageRoutes,
 };
