@@ -7,6 +7,7 @@ import Users from "../models/user.model";
 import BookPostsComments from "../models/bookPostsComment.model";
 import BookPosts from "../models/bookPost.model";
 import Notifications from "../models/notification.model";
+import { notificationCreate } from "../helpers/notificationCreate";
 
 interface CommentTypes {
   user: string;
@@ -62,17 +63,19 @@ export const createBookPostComments = async (
       if (!post) {
         return;
       }
-      console.log("post", post);
 
-      const notificationPayload: any = {
-        user: userId,
-        content: `${post._id}'li paylaşımınıza yorum geldi.`,
-        isRead: false,
-        isDeleted: false,
-      };
-      const notification = new Notifications(notificationPayload);
-      await notification.save();
-      // await Notifications.
+      // const notificationPayload: any = {
+      //   user: userId,
+      //   content: `Paylaşımınıza yorum geldi.`,
+      //   isRead: false,
+      //   isDeleted: false,
+      //   connection: "post",
+      //   connectionId: post._id,
+      // };
+      // const notification = new Notifications(notificationPayload);
+      // await notification.save();
+      const message = `Paylaşımınıza yorum geldi.`;
+      await notificationCreate(userId, message, "post", post._id);
 
       return res.json({
         status: true,

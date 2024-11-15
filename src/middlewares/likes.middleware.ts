@@ -5,6 +5,8 @@ import { tokenErrorMessage } from "../helpers/tokenErrorMessage";
 import Users from "../models/user.model";
 import BookPostsLikes from "../models/bookPostsLike.model";
 import BookPosts from "../models/bookPost.model";
+import Notifications from "../models/notification.model";
+import { notificationCreate } from "../helpers/notificationCreate";
 
 export const like = async (req: Request, res: Response) => {
   const { postId } = req.params;
@@ -53,9 +55,24 @@ export const like = async (req: Request, res: Response) => {
         await likes.save();
 
         // Like ın post dokumanına eklenmesi
-        await BookPosts.findByIdAndUpdate(postId, {
+        const post = await BookPosts.findByIdAndUpdate(postId, {
           $push: { likes: likes._id },
         });
+        if (!post) {
+          return;
+        }
+        // const notificationPayload: any = {
+        //   user: userId,
+        //   content: `Paylaşımınız beğenildi.`,
+        //   isRead: false,
+        //   isDeleted: false,
+        //   connection: "post",
+        //   connectionId: post._id,
+        // };
+        // const notification = new Notifications(notificationPayload);
+        // await notification.save();
+        const content = `Paylaşımınız beğenildi.`;
+        await notificationCreate(userId, content, "post", post._id);
 
         res.status(200).json({ status: true, message: "Paylaşım beğenildi." });
       }

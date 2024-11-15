@@ -3,6 +3,7 @@ import Follows from "../models/follow.model";
 import jwt from "jsonwebtoken";
 import tokenCheck from "../helpers/tokenCheck";
 import Users from "../models/user.model";
+import { notificationCreate } from "../helpers/notificationCreate";
 
 interface User {
   _id: string;
@@ -67,6 +68,14 @@ export const followUser = async (req: Request, res: Response) => {
         follow.isDeleted = false;
         follow.deletedAt = undefined;
         await follow.save();
+        const message = `Biri sizi takibe aldı.`;
+        const followingUser = await Users.findById(follow.following);
+        await notificationCreate(
+          userId,
+          message,
+          "profile",
+          followingUser?.userName
+        );
       } else {
         // Eğer önceden bir takip ilişkisi yoksa yeni takip ilişkisi oluşturuyoruz.
         follow = new Follows({ follower: userId, following: user._id });
