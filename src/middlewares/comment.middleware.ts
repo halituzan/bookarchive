@@ -95,12 +95,32 @@ export const getBookPostComments = async (
   next: () => void
 ) => {
   const { postId } = req.params;
-
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  const sortDirection = req.query.sort === "asc" ? 1 : -1;
   try {
-    const comments = await BookPostsComments.find({ post: postId });
+    const comments = await BookPostsComments.find({ post: postId })
+      .populate({
+        path: "user",
+        select: "-password -__v",
+      })
+      .sort({ createdAt: sortDirection }) // oluşturma tarihine göre sıralama
+      .select("-__v")
+      .skip((page - 1) * limit) // Sayfalama için atlama
+      .limit(limit)
+      .exec();
+
+    const total = await BookPostsComments.countDocuments({
+      post: postId,
+      isDeleted: false,
+    });
 
     return res.json({
-      status: true,
+      page,
+      totalPages: Math.ceil(total / limit),
+      total,
+      limit,
+      sort: req.query.sort || "desc",
       data: comments,
     });
   } catch (error) {
