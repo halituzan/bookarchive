@@ -71,10 +71,11 @@ export const followUser = async (req: Request, res: Response) => {
         const message = `Biri sizi takibe aldı.`;
         const followingUser = await Users.findById(follow.following);
         await notificationCreate(
-          userId,
+          user._id,
           message,
           "profile",
-          followingUser?.userName
+          followingUser?.userName,
+          "follow"
         );
       } else {
         // Eğer önceden bir takip ilişkisi yoksa yeni takip ilişkisi oluşturuyoruz.

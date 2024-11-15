@@ -75,7 +75,7 @@ export const createBookPostComments = async (
       // const notification = new Notifications(notificationPayload);
       // await notification.save();
       const message = `Paylaşımınıza yorum geldi.`;
-      await notificationCreate(userId, message, "post", post._id);
+      await notificationCreate(post.user, message, "post", post._id, "comment");
 
       return res.json({
         status: true,

@@ -1,16 +1,18 @@
 import Notifications from "../models/notification.model";
 
 export const notificationCreate = async (
-  user: string,
+  user: any,
   content: string,
   connection: string,
-  connectionId: any
+  connectionId: any,
+  type: "like" | "comment" | "follow" | "announcement" | "message"
 ) => {
   const notificationPayload: any = {
     user,
     content,
     connection,
     connectionId,
+    type,
     isRead: false,
     isDeleted: false,
   };

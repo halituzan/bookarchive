@@ -72,7 +72,7 @@ export const like = async (req: Request, res: Response) => {
         // const notification = new Notifications(notificationPayload);
         // await notification.save();
         const content = `Paylaşımınız beğenildi.`;
-        await notificationCreate(userId, content, "post", post._id);
+        await notificationCreate(post.user, content, "post", post._id, "like");
 
         res.status(200).json({ status: true, message: "Paylaşım beğenildi." });
       }
