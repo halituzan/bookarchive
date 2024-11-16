@@ -9,6 +9,8 @@ import { bucket } from "../configs/firebase.config";
 // Profil resmi yükleme fonksiyonu
 export const uploadProfileImage = async (req: Request, res: Response) => {
   const token = req.headers.authorization?.split("Bearer ")[1];
+  console.log("token",token);
+  
   if (!token) {
     return res.status(403).json({ message: "Token gerekli" });
   }
